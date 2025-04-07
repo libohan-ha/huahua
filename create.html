@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创作中心 - VISIONARY</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-neon-pink: #ff1493;
+            --color-electric-blue: #00ffff;
+            --color-bright-yellow: #ffff00;
+            --color-purple: #9d4edd;
+            --color-dark-blue: #0a1128;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* 背景动画效果 */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+        
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5%, 5%) scale(1.1); }
+            50% { transform: translate(0, 10%) scale(0.9); }
+            75% { transform: translate(-5%, 5%) scale(1.05); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, var(--color-neon-pink), var(--color-electric-blue), var(--color-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 10px var(--color-neon-pink),
+                      0 0 20px var(--color-electric-blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .neon-border:hover {
+            box-shadow: 0 0 15px var(--color-neon-pink),
+                      0 0 30px var(--color-electric-blue),
+                      0 0 5px var(--color-purple);
+        }
+        
+        .btn-hover {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-hover:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+            z-index: -1;
+        }
+        
+        .btn-hover:hover:before {
+            left: 100%;
+        }
+        
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 自定义滑块样式 */
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: linear-gradient(90deg, var(--color-neon-pink), var(--color-electric-blue));
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 5px var(--color-neon-pink);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 自定义选择框样式 */
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--color-neon-pink), var(--color-electric-blue));
+            border-radius: 10px;
+        }
+        
+        /* 文本区域样式增强 */
+        textarea {
+            transition: all 0.3s ease;
+            background: rgba(55, 65, 81, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        textarea:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.5) !important;
+        }
+        
+        /* 按钮样式增强 */
+        .style-btn {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .style-btn.active {
+            background: linear-gradient(45deg, var(--color-neon-pink), var(--color-electric-blue)) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .style-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 图片预览区域增强 */
+        .preview-area {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .preview-area:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                rgba(255, 20, 147, 0) 0%, 
+                rgba(255, 20, 147, 0.1) 50%, 
+                rgba(0, 255, 255, 0) 100%);
+            animation: rotate 10s linear infinite;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 操作按钮增强 */
+        .action-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: rgba(55, 65, 81, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 20, 147, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* 页面加载动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black">
+    <!-- 动态背景 -->
+    <div class="animated-bg">
+        <div class="bg-blob" style="top: 15%; left: 10%; width: 500px; height: 500px; background: rgba(255, 20, 147, 0.2); animation-delay: 0s;"></div>
+        <div class="bg-blob" style="top: 50%; left: 60%; width: 600px; height: 600px; background: rgba(0, 255, 255, 0.2); animation-delay: 2s;"></div>
+        <div class="bg-blob" style="top: 70%; left: 20%; width: 400px; height: 400px; background: rgba(157, 78, 221, 0.2); animation-delay: 4s;"></div>
+    </div>
+    <!-- 导航栏 -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold gradient-text">VISIONARY</h1>
+            </div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors">首页</a>
+                <a href="/create" class="text-pink-500">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold">退出</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-white text-2xl" id="mobile-menu-button"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+        
+        <!-- 移动菜单 -->
+        <div id="mobile-menu" class="hidden bg-black bg-opacity-95 w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors py-2 block">首页</a>
+                <a href="/create" class="text-pink-500 py-2 block">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors py-2 block">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors py-2 block">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors py-2 block">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold inline-block text-center">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <main class="pt-20 min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 左侧控制面板 -->
+                <div class="lg:w-3/5 space-y-6">
+                    <!-- 风格选择 -->
+                    <div class="bg-gray-800 rounded-xl p-6 neon-border">
+                        <h2 class="text-2xl font-bold mb-4">选择风格</h2>
+                        <div class="grid grid-cols-3 gap-4">
+                            <button class="p-4 bg-gray-700 rounded-lg hover:bg-pink-500 transition-colors text-center style-btn active" data-style="default">
+                                <i class="fas fa-image text-2xl mb-2 text-gray-400"></i>
+                                <span class="block font-medium">默认</span>
+                            </button>
+                            <button class="p-4 bg-gray-700 rounded-lg hover:bg-pink-500 transition-colors text-center style-btn" data-style="portrait">
+                                <i class="fas fa-user text-2xl mb-2 text-pink-400"></i>
+                                <span class="block font-medium">人像</span>
+                            </button>
+                            <button class="p-4 bg-gray-700 rounded-lg hover:bg-pink-500 transition-colors text-center style-btn" data-style="anime">
+                                <i class="fas fa-palette text-2xl mb-2 text-blue-400"></i>
+                                <span class="block font-medium">动漫</span>
+                            </button>
+                            <button class="p-4 bg-gray-700 rounded-lg hover:bg-pink-500 transition-colors text-center style-btn" data-style="oil">
+                                <i class="fas fa-paint-brush text-2xl mb-2 text-yellow-400"></i>
+                                <span class="block font-medium">油画</span>
+                            </button>
+                            <button class="p-4 bg-gray-700 rounded-lg hover:bg-pink-500 transition-colors text-center style-btn" data-style="logo">
+                                <i class="fas fa-vector-square text-2xl mb-2 text-green-400"></i>
+                                <span class="block font-medium">logo</span>
+                            </button>
+                            <button class="p-4 bg-gray-700 rounded-lg hover:bg-pink-500 transition-colors text-center style-btn" data-style="3d">
+                                <i class="fas fa-cube text-2xl mb-2 text-purple-400"></i>
+                                <span class="block font-medium">3D卡通</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 文本输入区 -->
+                    <div class="bg-gray-800 rounded-xl p-6 neon-border">
+                        <h2 class="text-2xl font-bold mb-4">描述你的创意</h2>
+                        <textarea 
+                            id="description-input"
+                            class="w-full h-40 bg-gray-700 rounded-lg p-4 text-white resize-none focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="详细描述你想要创建的图像..."></textarea>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <button id="generate-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 to-blue-500 rounded-xl font-bold text-xl hover:from-pink-600 hover:to-blue-600 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                        开始生成
+                    </button>
+                </div>
+
+                <!-- 右侧预览区 -->
+                <div class="lg:w-2/5">
+                    <div class="bg-gray-800 rounded-xl p-6 h-full neon-border">
+                        <h2 class="text-2xl font-bold mb-4">预览区域</h2>
+                        <div id="preview-container" class="aspect-square rounded-lg bg-gray-700 flex items-center justify-center preview-area neon-border">
+                            <div id="placeholder" class="text-center fade-in">
+                                <i class="fas fa-image text-6xl text-gray-500 mb-4 animate-pulse"></i>
+                                <p class="text-gray-400">生成的图像将在这里显示</p>
+                            </div>
+                            <img id="preview-image" class="hidden w-full h-full object-contain rounded-lg" src="" alt="生成的图像">
+                        </div>
+                        <!-- 图片操作按钮 -->
+                        <div class="flex justify-center mt-6 fade-in delay-200">
+                            <button id="download-btn" class="px-6 py-2 rounded-full action-btn" disabled>
+                                <i class="fas fa-download mr-2"></i>下载
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const styleButtons = document.querySelectorAll('.style-btn');
+            const descriptionInput = document.getElementById('description-input');
+            const generateBtn = document.getElementById('generate-btn');
+            const previewContainer = document.getElementById('preview-container');
+            const placeholder = document.getElementById('placeholder');
+            const previewImage = document.getElementById('preview-image');
+            const downloadBtn = document.getElementById('download-btn');
+            
+            let selectedStyle = 'default';
+            
+            // 风格按钮点击事件
+            styleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    styleButtons.forEach(btn => btn.classList.remove('active'));
+                    // 为当前按钮添加active类
+                    this.classList.add('active');
+                    // 更新选中的风格
+                    selectedStyle = this.getAttribute('data-style');
+                });
+            });
+            
+            // 生成按钮点击事件
+            generateBtn.addEventListener('click', function() {
+                const description = descriptionInput.value.trim();
+                if (!description) {
+                    alert('请输入图像描述');
+                    return;
+                }
+                
+                // 显示加载状态
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>生成中...';
+                placeholder.innerHTML = '<i class="fas fa-spinner fa-spin text-6xl text-pink-500 mb-4"></i><p class="text-gray-400">正在生成图像，请稍候...</p>';
+                previewImage.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                
+                // 准备请求数据
+                const requestData = {
+                    description: description,
+                    style: selectedStyle,
+                    size: "768",
+                    count: "1"
+                };
+                
+                // 发送AJAX请求
+                fetch('/generate-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.image_url) {
+                        // 显示生成的图像
+                        previewImage.src = data.image_url;
+                        previewImage.classList.remove('hidden');
+                        placeholder.classList.add('hidden');
+                        
+                        // 启用操作按钮
+                        downloadBtn.disabled = false;
+                        
+                        // 更新下载按钮的数据属性，存储当前图片URL
+                        downloadBtn.setAttribute('data-image-url', data.image_url);
+                    } else {
+                        // 显示错误信息
+                        placeholder.innerHTML = `<i class="fas fa-exclamation-circle text-6xl text-red-500 mb-4"></i><p class="text-red-400">${data.error || '生成图像失败，请重试'}</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    placeholder.innerHTML = '<i class="fas fa-exclamation-circle text-6xl text-red-500 mb-4"></i><p class="text-red-400">网络错误，请检查连接后重试</p>';
+                })
+                .finally(() => {
+                    // 恢复按钮状态
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '开始生成';
+                });
+            });
+            
+            // 下载按钮点击事件
+            downloadBtn.addEventListener('click', function() {
+                const imageUrl = this.getAttribute('data-image-url');
+                if (imageUrl) {
+                    // 创建一个Blob对象，确保浏览器将其视为可下载文件
+                    fetch(imageUrl)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            // 创建一个指向Blob的URL
+                            const blobUrl = URL.createObjectURL(blob);
+                            
+                            // 创建下载链接
+                            const a = document.createElement('a');
+                            a.href = blobUrl;
+                            a.download = 'visionary-image.jpg';
+                            a.style.display = 'none';
+                            
+                            // 添加到DOM，触发点击，然后移除
+                            document.body.appendChild(a);
+                            a.click();
+                            
+                            // 清理
+                            setTimeout(() => {
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(blobUrl); // 释放Blob URL
+                            }, 100);
+                        })
+                        .catch(error => {
+                            console.error('下载图片失败:', error);
+                            alert('下载图片失败，请重试');
+                        });
+                } else {
+                    alert('请先生成图片');
+                }
+            });
+        });
+
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

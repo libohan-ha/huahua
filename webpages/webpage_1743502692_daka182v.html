@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于构建校园资源循环利用体系，促进"节约型"向"创收型"转变的提案</title>
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Bold Modern Specific Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: white;
+            color: #1f2937;
+            transition: colors 0.3s;
+        }
+        
+        .dark body {
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        .bold-title {
+            font-size: 3rem;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            color: #2563eb;
+        }
+        
+        @media (min-width: 768px) {
+            .bold-title {
+                font-size: 4.5rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .bold-title {
+                font-size: 6rem;
+            }
+        }
+        
+        .dark .bold-title {
+            color: #60a5fa;
+        }
+
+        .section-title {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        @media (min-width: 768px) {
+            .section-title {
+                font-size: 2.25rem;
+                line-height: 2.5rem;
+                margin-bottom: 2rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .section-title {
+                font-size: 3rem;
+                line-height: 1;
+            }
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 0.375rem;
+            background-color: #ec4899;
+            transform: scaleX(0.5);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+        
+        .dark .section-title::after {
+            background-color: #db2777;
+        }
+        
+        .section-title:hover::after {
+            transform: scaleX(1);
+        }
+
+        .card {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            border-radius: 0;
+        }
+        
+        .dark .card {
+            background-color: #111827;
+            border-color: #374151;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #3b82f6;
+            transform: translateY(-0.25rem);
+        }
+        
+        .dark .card:hover {
+            border-color: #60a5fa;
+        }
+
+        .highlight {
+            color: #2563eb;
+            font-weight: 700;
+        }
+        
+        .dark .highlight {
+            color: #60a5fa;
+        }
+
+        .list-item::before {
+            content: '>';
+            margin-right: 0.75rem;
+            font-weight: 900;
+            color: #ec4899;
+            font-size: 1.25rem;
+            display: inline-block;
+            transform: scale(1.5);
+        }
+        
+        .dark .list-item::before {
+            color: #db2777;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0; /* Start hidden */
+        }
+
+        /* Scrollbar Styles (Optional but fits modern look) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #e5e7eb;
+        }
+        
+        .dark ::-webkit-scrollbar-track {
+            background-color: #1f2937;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background-color: #2563eb;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background-color: #3b82f6;
+        }
+
+        /* Theme Toggle Button Style */
+        #theme-toggle {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            z-index: 50;
+            padding: 0.75rem;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        #theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        #theme-toggle:focus {
+            outline: none;
+        }
+        
+        .dark #theme-toggle {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+        
+        #theme-toggle i {
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" aria-label="Toggle Dark/Light Mode">
+        <i class="fas fa-moon"></i> <!-- Default icon, will be changed by JS -->
+    </button>
+
+    <div class="container mx-auto px-4 md:px-8 py-12 md:py-20">
+
+        <!-- Header Section -->
+        <header class="mb-16 md:mb-24 text-center md:text-left fade-in" style="animation-delay: 0.1s;">
+            <h1 class="bold-title mb-4">
+                校园资源循环利用体系<br class="hidden md:block"><span class="text-pink-500 dark:text-pink-600">节约型</span> 向 <span class="text-yellow-500 dark:text-yellow-400">创收型</span> 转变
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-2">构建校园可持续发展新模式</p>
+            <p class="text-lg text-gray-500 dark:text-gray-500">提案者： <span class="font-semibold" id="proposer-name">XXX</span> (请在此处填写您的姓名或社团名称)</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="space-y-16 md:space-y-24">
+
+            <!-- Section 1: Background & Problems -->
+            <section class="fade-in" style="animation-delay: 0.2s;">
+                <h2 class="section-title mb-8"><i class="fas fa-exclamation-triangle mr-3 text-yellow-500 dark:text-yellow-400"></i> 背景与问题</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4 text-lg leading-relaxed">
+                        <p>在国家大力推进<span class="highlight">绿色低碳发展</span>和<span class="highlight">生态文明建设</span>的大背景下，高校作为重要社会单元，理应走在可持续发展前列。</p>
+                        <p>然而，当前多数高校普遍面临<span class="highlight">资源利用效率不高</span>的挑战：一方面，废弃物（纸张、塑料瓶、快递包装等）数量庞大，处理成本高、环境压力大；另一方面，大量可再利用资源（旧书、旧衣物、闲置电子产品）<span class="highlight">未能有效盘活</span>，造成浪费。</p>
+                        <p class="mt-4 text-pink-600 dark:text-pink-400 font-semibold">核心症结：现有体系不健全，环保意识与实践脱节，缺乏资源循环与价值创造的有效结合机制，校园资源潜力远未被挖掘。</p>
+                    </div>
+                    <div class="flex justify-center items-center p-6 bg-yellow-100 dark:bg-yellow-900/30 min-h-[250px]">
+                         <i class="fas fa-recycle text-8xl text-yellow-500 dark:text-yellow-400 opacity-70 transform rotate-12"></i>
+                         <i class="fas fa-times-circle text-6xl text-red-500 dark:text-red-400 absolute transform -rotate-6 opacity-80"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Limitations of Existing Models -->
+            <section class="fade-in" style="animation-delay: 0.3s;">
+                <h2 class="section-title mb-8"><i class="fas fa-ban mr-3 text-red-500 dark:text-red-400"></i> 现有模式的局限性</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="card">
+                        <h3 class="font-bold text-xl mb-3 text-red-600 dark:text-red-400"><i class="fas fa-dumpster-fire mr-2"></i> 回收体系效率低下</h3>
+                        <p class="text-gray-700 dark:text-gray-300">布局不合理、指引模糊、参与不便，导致混杂严重，后续处理成本高、价值低。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-bold text-xl mb-3 text-orange-600 dark:text-orange-400"><i class="fas fa-heart-crack mr-2"></i> 学生参与激励不足</h3>
+                        <p class="text-gray-700 dark:text-gray-300">缺乏常态化、系统性激励与便捷平台，环保行动多停留在意识层面，难持续。</p>
+                    </div>
+                     <div class="card">
+                        <h3 class="font-bold text-xl mb-3 text-purple-600 dark:text-purple-400"><i class="fas fa-unlink mr-2"></i> 价值转化渠道缺失</h3>
+                        <p class="text-gray-700 dark:text-gray-300">回收物、闲置品缺乏再利用、再创造和市场化渠道，"变废为宝"潜力被低估。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-bold text-xl mb-3 text-teal-600 dark:text-teal-400"><i class="fas fa-people-arrows mr-2"></i> 联动机制不畅</h3>
+                        <p class="text-gray-700 dark:text-gray-300">校内各部门、学生社团协同不足，未形成管理合力与资源共享。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Proposal Suggestions -->
+            <section class="fade-in" style="animation-delay: 0.4s;">
+                <h2 class="section-title mb-10"><i class="fas fa-lightbulb mr-3 text-blue-500 dark:text-blue-400"></i> 提案建议：构建校园资源循环利用新模式</h2>
+
+                <div class="space-y-12">
+                    <!-- Suggestion 1 -->
+                    <div class="md:flex gap-8 items-start p-6 bg-gray-50 dark:bg-gray-900 border-l-4 border-blue-500 dark:border-blue-400">
+                         <div class="flex-shrink-0 mb-4 md:mb-0 md:w-1/4">
+                              <h3 class="font-bold text-2xl mb-2 text-blue-700 dark:text-blue-300"><i class="fas fa-network-wired mr-2"></i> 优化回收网络</h3>
+                              <p class="text-gray-600 dark:text-gray-400">提升基础效率</p>
+                         </div>
+                         <div class="space-y-3 md:w-3/4">
+                              <p><strong class="text-blue-600 dark:text-blue-400">科学规划布局：</strong> 后勤牵头，联合学生组织调研，优化设置标准化、分类清晰回收站点（可引入智能设备），加密重点区域布点。</p>
+                              <p><strong class="text-blue-600 dark:text-blue-400">规范操作流程：</strong> 建立学生志愿者/勤工助学参与的常态化收集、分拣、清洁、数据记录流程，确保回收物质量。</p>
+                         </div>
+                    </div>
+
+                    <!-- Suggestion 2 -->
+                     <div class="md:flex gap-8 items-start p-6 bg-gray-50 dark:bg-gray-900 border-l-4 border-pink-500 dark:border-pink-400">
+                         <div class="flex-shrink-0 mb-4 md:mb-0 md:w-1/4">
+                              <h3 class="font-bold text-2xl mb-2 text-pink-700 dark:text-pink-300"><i class="fas fa-store mr-2"></i> 搭建多元平台</h3>
+                              <p class="text-gray-600 dark:text-gray-400">挖掘资源价值</p>
+                         </div>
+                         <div class="space-y-3 md:w-3/4">
+                              <p><strong class="text-pink-600 dark:text-pink-400">常态化"校园循环市集"：</strong> 学生主导，定期举办线上线下二手交易与置换平台（书籍、衣物、电子产品等），引入积分、公益模式。</p>
+                              <p><strong class="text-pink-600 dark:text-pink-400">设立"创意再生工坊/实验室"：</strong> 依托现有空间，鼓励学生利用废弃物进行创意设计制作（文创、教具、艺术品）。</p>
+                         </div>
+                    </div>
+
+                    <!-- Suggestion 3 -->
+                     <div class="md:flex gap-8 items-start p-6 bg-gray-50 dark:bg-gray-900 border-l-4 border-yellow-500 dark:border-yellow-400">
+                         <div class="flex-shrink-0 mb-4 md:mb-0 md:w-1/4">
+                              <h3 class="font-bold text-2xl mb-2 text-yellow-700 dark:text-yellow-300"><i class="fas fa-bullhorn mr-2"></i> 强化宣传激励</h3>
+                               <p class="text-gray-600 dark:text-gray-400">激发内生动力</p>
+                         </div>
+                         <div class="space-y-3 md:w-3/4">
+                              <p><strong class="text-yellow-600 dark:text-yellow-400">融入教育体系：</strong> 将环保理念融入新生教育、课程思政、社会实践。</p>
+                              <p><strong class="text-yellow-600 dark:text-yellow-400">创新激励方式：</strong> 建立基于参与行为的积分/荣誉激励体系。</p>
+                              <p><strong class="text-yellow-600 dark:text-yellow-400">营造校园文化：</strong> 通过讲座、竞赛、展览、新媒体宣传，普及知识、分享案例、树立典型。</p>
+                         </div>
+                    </div>
+
+                    <!-- Suggestion 4 -->
+                     <div class="md:flex gap-8 items-start p-6 bg-gray-50 dark:bg-gray-900 border-l-4 border-green-500 dark:border-green-400">
+                         <div class="flex-shrink-0 mb-4 md:mb-0 md:w-1/4">
+                              <h3 class="font-bold text-2xl mb-2 text-green-700 dark:text-green-300"><i class="fas fa-handshake mr-2"></i> 探索市场运作</h3>
+                               <p class="text-gray-600 dark:text-gray-400">实现可持续发展</p>
+                         </div>
+                         <div class="space-y-3 md:w-3/4">
+                              <p><strong class="text-green-600 dark:text-green-400">建立校企合作：</strong> 对接回收、再生企业或公益组织，规范处理/销售回收物，实现基础创收。</p>
+                              <p><strong class="text-green-600 dark:text-green-400">开发校园再生品牌：</strong> 包装推广"创意再生工坊"产品，通过多渠道销售，收入反哺项目。</p>
+                              <p><strong class="text-green-600 dark:text-green-400">引入社会资本：</strong> 吸引关注环保的企业赞助或合作。</p>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Expected Outcomes -->
+            <section class="fade-in" style="animation-delay: 0.5s;">
+                <h2 class="section-title mb-8"><i class="fas fa-chart-line mr-3 text-green-500 dark:text-green-400"></i> 预期成效</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="card !border-green-500 dark:!border-green-400 hover:!shadow-green-300/30 dark:hover:!shadow-green-700/30">
+                        <h3 class="font-bold text-xl mb-3 text-green-600 dark:text-green-400"><i class="fas fa-recycle mr-2"></i> 资源效率提升</h3>
+                        <p class="text-gray-700 dark:text-gray-300">显著提高分类回收率与资源化利用率。</p>
+                    </div>
+                     <div class="card !border-green-500 dark:!border-green-400 hover:!shadow-green-300/30 dark:hover:!shadow-green-700/30">
+                        <h3 class="font-bold text-xl mb-3 text-green-600 dark:text-green-400"><i class="fas fa-leaf mr-2"></i> 环境效益改善</h3>
+                        <p class="text-gray-700 dark:text-gray-300">有效盘活闲置资源，减少浪费与污染。</p>
+                    </div>
+                     <div class="card !border-green-500 dark:!border-green-400 hover:!shadow-green-300/30 dark:hover:!shadow-green-700/30">
+                        <h3 class="font-bold text-xl mb-3 text-green-600 dark:text-green-400"><i class="fas fa-coins mr-2"></i> 经济模式初现</h3>
+                        <p class="text-gray-700 dark:text-gray-300">市场化运作产生收益，支持项目可持续运营。</p>
+                    </div>
+                     <div class="card !border-green-500 dark:!border-green-400 hover:!shadow-green-300/30 dark:hover:!shadow-green-700/30">
+                        <h3 class="font-bold text-xl mb-3 text-green-600 dark:text-green-400"><i class="fas fa-user-graduate mr-2"></i> 育人效果增强</h3>
+                        <p class="text-gray-700 dark:text-gray-300">提升学生环保意识、实践能力、创新精神和社会责任感。</p>
+                    </div>
+                     <div class="card !border-green-500 dark:!border-green-400 hover:!shadow-green-300/30 dark:hover:!shadow-green-700/30">
+                        <h3 class="font-bold text-xl mb-3 text-green-600 dark:text-green-400"><i class="fas fa-university mr-2"></i> 学校形象提升</h3>
+                        <p class="text-gray-700 dark:text-gray-300">打造绿色、低碳、可持续校园典范，提升社会影响力。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Conclusion -->
+            <section class="fade-in text-center md:text-left" style="animation-delay: 0.6s;">
+                 <h2 class="section-title mb-8"><i class="fas fa-flag-checkered mr-3 text-gray-700 dark:text-gray-300"></i> 结语</h2>
+                 <div class="text-lg leading-relaxed space-y-4 p-8 bg-gradient-to-r from-blue-100 via-pink-100 to-yellow-100 dark:from-blue-900/50 dark:via-pink-900/50 dark:to-yellow-900/50">
+                      <p>构建高效校园资源循环利用体系，是高校<span class="highlight">可持续发展的内在要求</span>，也是<span class="highlight">培养时代新人的重要实践载体</span>。</p>
+                      <p>建议学校相关管理部门<span class="highlight">高度重视</span>，加强顶层设计与统筹协调，为学生组织和社会力量参与创造有利条件。</p>
+                      <p class="font-bold text-xl text-blue-700 dark:text-blue-300">让我们共同推动校园从"资源节约型"向"价值创收型"的绿色转型！</p>
+                 </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 md:mt-24 pt-8 border-t border-gray-300 dark:border-gray-700 text-center text-gray-500 dark:text-gray-400 fade-in" style="animation-delay: 0.7s;">
+            <p>&copy; <span id="current-year"></span> <span id="footer-proposer-name">XXX</span> (请在此处填写您的姓名或社团名称). All rights reserved.</p>
+            <p>Powered by Bold Modern Design</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Simple Fade-in Animation Trigger on Scroll (optional, basic version)
+        const fadeInElements = document.querySelectorAll('.fade-in');
+
+        const observerOptions = {
+            root: null, // relative to document viewport
+            rootMargin: '0px',
+            threshold: 0.1 // trigger when 10% of the element is visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Element is visible, add class to trigger animation
+                    // We don't remove the class, animation runs once
+                     // No need to add 'fade-in' class here, it's already set in HTML
+                     // We just need to make sure opacity is handled correctly by the keyframe animation
+                    // observer.unobserve(entry.target); // Optional: Stop observing once animated
+                }
+            });
+        }, observerOptions);
+
+        fadeInElements.forEach(el => {
+            observer.observe(el);
+        });
+
+
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const htmlElement = document.documentElement;
+
+        // Function to set theme
+        const setTheme = (isDark) => {
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                htmlElement.classList.remove('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+
+        // Check local storage or system preference on load
+        const storedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        // Toggle theme on button click
+        themeToggle.addEventListener('click', () => {
+            setTheme(!htmlElement.classList.contains('dark'));
+        });
+
+        // Update Proposer Name and Year
+        const proposerName = "XXX"; // <--- CHANGE THIS TO YOUR NAME/GROUP
+        document.getElementById('proposer-name').textContent = proposerName;
+        document.getElementById('footer-proposer-name').textContent = proposerName;
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    </script>
+
+</body>
+</html>

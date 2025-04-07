@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成网页 - VISIONARY</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-neon-pink: #ff1493;
+            --color-electric-blue: #00ffff;
+            --color-purple: #9d4edd;
+            --color-dark-blue: #0a1128;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+        
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5%, 5%) scale(1.1); }
+            50% { transform: translate(0, 10%) scale(0.9); }
+            75% { transform: translate(-5%, 5%) scale(1.05); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, var(--color-neon-pink), var(--color-electric-blue), var(--color-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 10px var(--color-neon-pink),
+                      0 0 20px var(--color-electric-blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        #webpage-preview {
+            min-height: 400px;
+            height: auto;
+            width: 100%;
+            transition: all 0.5s ease;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 20px;
+            border-radius: 0.5rem;
+            background-color: #111827;
+        }
+        
+        .webpage-frame {
+            width: 100%;
+            height: 450px;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: white;
+        }
+        
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+        }
+        
+        main {
+            flex: 1;
+            padding-bottom: 80px; /* 为底部导航留出空间 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+        }
+        
+        nav.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black">
+    <!-- 动态背景 -->
+    <div class="animated-bg">
+        <div class="bg-blob" style="top: 15%; left: 10%; width: 500px; height: 500px; background: rgba(255, 20, 147, 0.2); animation-delay: 0s;"></div>
+        <div class="bg-blob" style="top: 50%; left: 60%; width: 600px; height: 600px; background: rgba(0, 255, 255, 0.2); animation-delay: 2s;"></div>
+        <div class="bg-blob" style="top: 70%; left: 20%; width: 400px; height: 400px; background: rgba(157, 78, 221, 0.2); animation-delay: 4s;"></div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold gradient-text">VISIONARY</h1>
+            </div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors">生成卡片</a>
+                <a href="/create-webpage" class="text-pink-500">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold">退出</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-white text-2xl" id="mobile-menu-button"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+        
+        <!-- 移动菜单 -->
+        <div id="mobile-menu" class="hidden bg-black bg-opacity-95 w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors py-2 block">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors py-2 block">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors py-2 block">生成卡片</a>
+                <a href="/create-webpage" class="text-pink-500 py-2 block">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors py-2 block">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold inline-block text-center">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-32 px-4">
+        <div class="container mx-auto">
+            <div class="flex flex-col">
+                <h1 class="text-4xl md:text-5xl font-bold text-center mb-8 gradient-text">创建你的专属网页</h1>
+                <p class="text-gray-300 text-center mb-12 max-w-2xl mx-auto">
+                    描述你想要的网页内容，AI将为你生成一个完整的HTML网页，可以直接预览和下载。
+                </p>
+            </div>
+            
+            <div class="grid-container grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <!-- 左侧：内容输入区域 -->
+                <div class="bg-gray-800 bg-opacity-50 p-6 rounded-xl neon-border min-h-[380px]">
+                    <h2 class="text-2xl font-bold mb-6 text-center">输入内容</h2>
+                    
+                    <!-- 文本输入 -->
+                    <div class="mb-6">
+                        <label for="content" class="block text-sm font-medium text-gray-300 mb-2">网页内容 <span class="text-pink-500">*</span></label>
+                        <textarea id="content" class="w-full h-64 bg-gray-700 text-white rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="请详细描述你想要的网页内容，例如：一个关于宠物用品的简单展示页面，包含导航栏、轮播图、产品列表和联系表单"></textarea>
+                    </div>
+                    
+                    <!-- 风格选择 -->
+                    <div class="mb-6">
+                        <input type="hidden" id="webpage-style" value="默认风格">
+                    </div>
+                    
+                    <!-- 生成按钮 -->
+                    <div class="flex justify-center">
+                        <button id="generateBtn" class="bg-gradient-to-r from-pink-500 to-blue-500 px-8 py-3 rounded-full text-white font-bold hover:shadow-lg transition-all">
+                            <i class="fas fa-magic mr-2"></i>生成网页
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 右侧：网页预览 -->
+                <div class="bg-gray-800 bg-opacity-50 p-6 rounded-xl neon-border min-h-[380px] flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">网页预览</h2>
+                        <div class="flex space-x-2">
+                            <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg hidden">
+                                <i class="fas fa-download mr-2"></i>下载HTML
+                            </button>
+                            <button id="fullscreenBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg hidden">
+                                <i class="fas fa-expand mr-2"></i>全屏
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="webpage-preview" class="flex-1 flex-col items-center justify-center">
+                        <div id="initial-message" class="text-center text-gray-400">
+                            <i class="fas fa-globe-americas text-6xl mb-4"></i>
+                            <p>你的网页预览将在这里显示</p>
+                        </div>
+                        
+                        <div id="loading" class="hidden text-center">
+                            <div class="loading-spinner mb-4"></div>
+                            <p>正在生成网页，请稍候...</p>
+                        </div>
+                        
+                        <iframe id="webpage-frame" class="webpage-frame hidden"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // 生成网页功能
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const content = document.getElementById('content').value.trim();
+            
+            if (!content) {
+                alert('请输入网页内容描述');
+                return;
+            }
+            
+            // 获取默认风格
+            const style = document.getElementById('webpage-style').value;
+            
+            // 显示加载中
+            document.getElementById('initial-message').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('webpage-frame').classList.add('hidden');
+            
+            // 调用API生成网页
+            fetch('/generate-webpage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content, style })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').classList.add('hidden');
+                
+                if (data.success) {
+                    // 在iframe中显示网页
+                    const frame = document.getElementById('webpage-frame');
+                    frame.classList.remove('hidden');
+                    
+                    // 直接使用HTML代码写入iframe
+                    const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                    frameDoc.open();
+                    frameDoc.write(data.html_code);
+                    frameDoc.close();
+                    
+                    // 显示全屏按钮
+                    const fullscreenBtn = document.getElementById('fullscreenBtn');
+                    fullscreenBtn.classList.remove('hidden');
+                    
+                    // 显示下载按钮
+                    const downloadBtn = document.getElementById('downloadBtn');
+                    downloadBtn.classList.remove('hidden');
+                    
+                    // 保存HTML代码以供下载
+                    let generatedHTML = data.html_code;
+                    
+                    // 下载按钮点击事件
+                    downloadBtn.onclick = function() {
+                        // 创建Blob对象
+                        const blob = new Blob([generatedHTML], { type: 'text/html' });
+                        const url = URL.createObjectURL(blob);
+                        
+                        // 创建临时下载链接
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = '生成的网页.html';
+                        document.body.appendChild(a);
+                        a.click();
+                        
+                        // 清理
+                        setTimeout(function() {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                    };
+                    
+                    // 全屏按钮点击事件
+                    fullscreenBtn.onclick = function() {
+                        if (frame.requestFullscreen) {
+                            frame.requestFullscreen();
+                        } else if (frame.webkitRequestFullscreen) { /* Safari */
+                            frame.webkitRequestFullscreen();
+                        } else if (frame.msRequestFullscreen) { /* IE11 */
+                            frame.msRequestFullscreen();
+                        }
+                    };
+                } else {
+                    document.getElementById('initial-message').classList.remove('hidden');
+                    alert('生成网页失败: ' + (data.error || '未知错误'));
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('initial-message').classList.remove('hidden');
+                console.error('生成请求错误:', error);
+                alert('请求失败，请重试');
+            });
+        });
+    </script>
+</body>
+</html> 

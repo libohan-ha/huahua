@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识卡片 - 大胆现代风格</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #111827; /* 深灰蓝 */
+            --primary-color: #FBBF24; /* 亮黄 */
+            --secondary-color: #3B82F6; /* 电子蓝 */
+            --accent-color: #EC4899; /* 荧光粉 */
+            --text-light: #F3F4F6; /* 浅灰白 */
+            --text-dark: #1F2937; /* 深灰 */
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            overflow: hidden; /* 防止元素溢出影响布局 */
+        }
+
+        .knowledge-card {
+            width: 400px;
+            max-height: 1280px; /* Adjust as needed */
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            overflow: hidden; /* Crucial for bold modern overlap */
+            position: relative;
+            padding: 2rem; /* Add padding for content spacing */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease-out;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Bold Modern Specific Styles */
+        .card-background-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .shape-1 {
+            position: absolute;
+            top: -10%;
+            left: -20%;
+            width: 80%;
+            height: 50%;
+            background-color: var(--secondary-color); /* Electric Blue */
+            transform: skewX(-30deg) rotate(-15deg);
+            opacity: 0.9;
+        }
+
+        .shape-2 {
+            position: absolute;
+            bottom: -15%;
+            right: -25%;
+            width: 70%;
+            height: 60%;
+            background-color: var(--primary-color); /* Bright Yellow */
+            border-radius: 50% 30% 80% 20% / 40% 70% 30% 60%;
+            transform: rotate(25deg);
+            opacity: 0.8;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-area {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            writing-mode: vertical-rl;
+            font-size: 0.7rem; /* 11.2px */
+            font-weight: 700; /* Bold */
+            color: var(--accent-color);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transform: rotate(180deg); /* Adjust rotation for vertical-rl */
+             z-index: 5; /* Ensure date is on top */
+        }
+
+        .main-title {
+            font-size: 4.5rem; /* 72px, HUGE title */
+            font-weight: 900; /* Ultra Bold */
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 0.5rem; /* 8px */
+            letter-spacing: -0.05em; /* Compressed */
+            text-shadow: 2px 2px 0 var(--text-dark);
+            transform: translateX(-5px); /* Slight offset for dynamic feel */
+        }
+
+        .sub-title {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 500; /* Medium */
+            color: var(--text-light);
+            margin-bottom: 2.5rem; /* 40px */
+            max-width: 80%; /* Prevent subtitle from being too wide */
+            line-height: 1.4;
+            opacity: 0.9;
+             margin-left: 5px; /* Align slightly with title offset */
+        }
+
+        .quote-block {
+            background-color: var(--accent-color);
+            padding: 1.5rem; /* 24px */
+            margin: 2rem -2.5rem 2.5rem -1rem; /* Negative margin to overflow slightly */
+            position: relative;
+            transform: rotate(-2deg) translateX(5px); /* Slight rotation and offset */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .quote-block:hover {
+            transform: rotate(-1deg) scale(1.02) translateX(0px);
+        }
+
+        .quote-block::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 10%;
+            width: 30px;
+            height: 30px;
+            background-color: var(--secondary-color);
+            transform: rotate(45deg);
+        }
+
+        .quote-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem; /* 16px */
+            font-weight: 500;
+            color: var(--bg-color); /* Dark text on bright background */
+            line-height: 1.7;
+            position: relative; /* For pseudo element positioning */
+            padding-left: 1rem; /* Space for quote mark */
+        }
+         .quote-text::before {
+            content: "\f10d"; /* Font Awesome quote left */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: -0.5rem;
+            top: -0.2rem;
+            font-size: 1.5rem;
+            color: rgba(0,0,0,0.2);
+         }
+
+
+        .key-points-title {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem; /* 24px */
+            border-bottom: 3px solid var(--primary-color);
+            display: inline-block;
+            padding-bottom: 0.3rem;
+             transform: skewX(-10deg);
+        }
+
+
+        .key-point {
+            display: flex;
+            align-items: flex-start; /* Align items to the start */
+            margin-bottom: 1.5rem; /* 24px */
+            padding-left: 1rem; /* Indent for visual hierarchy */
+            position: relative;
+             transition: transform 0.2s ease-out;
+        }
+
+        .key-point:hover {
+             transform: translateX(5px);
+        }
+
+
+         .key-point i {
+            font-size: 1.5rem; /* 24px */
+            color: var(--primary-color);
+            margin-right: 1rem; /* 16px */
+            margin-top: 0.1rem; /* Adjust icon vertical alignment */
+            flex-shrink: 0; /* Prevent icon from shrinking */
+            transition: color 0.3s ease;
+        }
+         .key-point:hover i {
+             color: var(--accent-color);
+         }
+
+
+        .key-point-text strong {
+            display: block;
+            font-weight: 700;
+            color: var(--text-light);
+            font-size: 1rem; /* 16px */
+            margin-bottom: 0.25rem; /* 4px */
+        }
+
+        .key-point-text span {
+            font-size: 0.875rem; /* 14px */
+            color: var(--text-light);
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+         /* Decorative Line for Key Points */
+        .key-point::after {
+            content: '';
+            position: absolute;
+            left: -0.5rem; /* Position to the left of the padding */
+            top: 0.2rem;
+            bottom: 0.2rem;
+            width: 4px;
+            background-color: var(--secondary-color);
+            opacity: 0.6;
+            transition: background-color 0.3s ease;
+        }
+         .key-point:hover::after {
+             background-color: var(--accent-color);
+         }
+
+
+        .editor-note {
+            position: absolute;
+            bottom: 1.5rem;
+            left: -1.5rem; /* Position partially outside */
+            writing-mode: vertical-rl;
+            transform: rotate(180deg); /* Compensate for vertical-rl */
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            padding: 0.8rem 0.5rem;
+            font-size: 0.7rem; /* 11.2px */
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 3px -3px 10px rgba(0, 0, 0, 0.2);
+             z-index: 5;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="knowledge-card">
+        <div class="card-background-shapes">
+            <div class="shape-1"></div>
+            <div class="shape-2"></div>
+        </div>
+
+        <div class="date-area" id="current-date">DATE</div>
+
+        <div class="card-content">
+            <h1 class="main-title">循环<br>变革</h1>
+            <h2 class="sub-title">校园可持续未来提案</h2>
+
+            <div class="quote-block">
+                <p class="quote-text">将校园打造成为绿色、低碳、可持续发展的示范区，提升学校的社会形象和影响力。</p>
+            </div>
+
+            <h3 class="key-points-title">行动纲领</h3>
+
+            <div class="key-points">
+                <div class="key-point">
+                    <i class="fas fa-network-wired"></i>
+                    <div class="key-point-text">
+                        <strong>优化回收网络</strong>
+                        <span>智能站点规划，规范操作流程，提升基础效率。</span>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <i class="fas fa-store"></i>
+                    <div class="key-point-text">
+                        <strong>搭建多元平台</strong>
+                        <span>常态化循环市集，设立创意再生工坊，挖掘资源价值。</span>
+                    </div>
+                </div>
+                 <div class="key-point">
+                    <i class="fas fa-bullhorn"></i>
+                    <div class="key-point-text">
+                        <strong>强化教育激励</strong>
+                        <span>融入教育体系，创新积分奖励，激发内生动力。</span>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <i class="fas fa-handshake"></i>
+                    <div class="key-point-text">
+                        <strong>探索市场运作</strong>
+                        <span>深化校企合作，开发再生品牌，实现可持续发展。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-note">Eco-Vanguard</div>
+    </div>
+
+    <script>
+        function formatDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            // Format for vertical display: YYYY / MM / DD
+            document.getElementById('current-date').textContent = `${year} / ${month} / ${day}`;
+        }
+        formatDate();
+
+         // Simple fade-in animation trigger on load for the card
+        window.addEventListener('load', () => {
+            const card = document.querySelector('.knowledge-card');
+            // Trigger reflow to ensure animation plays
+            card.offsetHeight;
+            card.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

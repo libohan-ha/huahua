@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成卡片 - VISIONARY</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-neon-pink: #ff1493;
+            --color-electric-blue: #00ffff;
+            --color-purple: #9d4edd;
+            --color-dark-blue: #0a1128;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+        
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5%, 5%) scale(1.1); }
+            50% { transform: translate(0, 10%) scale(0.9); }
+            75% { transform: translate(-5%, 5%) scale(1.05); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, var(--color-neon-pink), var(--color-electric-blue), var(--color-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 10px var(--color-neon-pink),
+                      0 0 20px var(--color-electric-blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .style-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            margin-bottom: 12px;
+        }
+        
+        .style-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .style-card.selected {
+            border-color: var(--color-neon-pink);
+            box-shadow: 0 0 15px var(--color-neon-pink);
+        }
+        
+        #card-preview {
+            min-height: 400px;
+            height: auto;
+            width: 100%;
+            transition: all 0.5s ease;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 20px;
+            border-radius: 0.5rem;
+            background-color: #111827;
+        }
+        
+        /* 确保卡片预览区域内的所有内容居中 */
+        #card-preview > * {
+            max-width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 auto !important;
+            position: relative !important;
+            transform: none !important;
+            text-align: center !important;
+            left: 0 !important;
+            right: 0 !important;
+        }
+        
+        .card-container {
+            max-width: 100%;
+            overflow-x: auto;
+            max-height: none;
+        }
+        
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 风格选择垂直滚动区域 */
+        .styles-container {
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-neon-pink) rgba(0,0,0,0.2);
+        }
+        
+        .styles-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .styles-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+        
+        .styles-container::-webkit-scrollbar-thumb {
+            background-color: var(--color-neon-pink);
+            border-radius: 4px;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+        }
+        
+        main {
+            flex: 1;
+            padding-bottom: 80px; /* 为底部导航留出空间 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+        }
+        
+        nav.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 样式部分：添加编辑模式相关的样式 */
+        .editable-text {
+            cursor: text;
+            border: 1px dashed transparent;
+            transition: all 0.2s ease;
+            padding: 2px;
+        }
+        
+        .editable .editable-text:hover {
+            border-color: var(--color-neon-pink);
+            background-color: rgba(255, 20, 147, 0.1);
+        }
+        
+        .editable .editable-text:focus {
+            border-color: var(--color-electric-blue);
+            background-color: rgba(0, 255, 255, 0.1);
+            outline: none;
+        }
+        
+        /* 当文本正在编辑时的样式 */
+        .editing {
+            border: 1px dashed var(--color-electric-blue) !important;
+            background-color: rgba(0, 255, 255, 0.1) !important;
+            padding: 5px !important;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* 确保两个方框容器大小相等 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            
+            /* 强制两个方框相等大小 */
+            .grid-container > div {
+                width: 100%;
+                min-width: 0;
+                max-width: none;
+            }
+        }
+        
+        /* 添加风格卡片计数样式 */
+        .style-count {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black">
+    <!-- 动态背景 -->
+    <div class="animated-bg">
+        <div class="bg-blob" style="top: 15%; left: 10%; width: 500px; height: 500px; background: rgba(255, 20, 147, 0.2); animation-delay: 0s;"></div>
+        <div class="bg-blob" style="top: 50%; left: 60%; width: 600px; height: 600px; background: rgba(0, 255, 255, 0.2); animation-delay: 2s;"></div>
+        <div class="bg-blob" style="top: 70%; left: 20%; width: 400px; height: 400px; background: rgba(157, 78, 221, 0.2); animation-delay: 4s;"></div>
+    </div>
+    
+    <!-- 顶部导航栏 -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold gradient-text">VISIONARY</h1>
+            </div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors">生成图片</a>
+                <a href="/create-card" class="text-pink-500">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold">退出</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-white text-2xl" id="mobile-menu-button"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+        
+        <!-- 移动菜单 -->
+        <div id="mobile-menu" class="hidden bg-black bg-opacity-95 w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors py-2 block">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors py-2 block">生成图片</a>
+                <a href="/create-card" class="text-pink-500 py-2 block">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors py-2 block">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors py-2 block">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold inline-block text-center">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-24 pb-12">
+        <div class="container">
+            <h1 class="text-4xl font-bold mb-6 text-center gradient-text">创建你的精美卡片</h1>
+            <p class="text-xl text-center text-gray-300 mb-12">输入内容，选择风格，一键生成精美设计卡片</p>
+            
+            <div class="grid-container">
+                <!-- 左侧输入区 -->
+                <div class="bg-gray-800 bg-opacity-50 rounded-xl p-6 neon-border">
+                    <h2 class="text-2xl font-bold mb-4">1. 输入内容</h2>
+                    <textarea id="card-content" class="w-full h-32 bg-gray-900 text-white rounded-lg p-4 mb-6" placeholder="输入你想要展示的内容..."></textarea>
+                    
+                    <h2 class="text-2xl font-bold mb-4">2. 选择风格</h2>
+                    <div class="styles-container mb-6">
+                        <!-- 极简主义风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="极简主义风格">
+                            <span class="style-count">1</span>
+                            <h3 class="text-lg font-bold mb-2">极简主义风格 (Minimalist)</h3>
+                            <p class="text-gray-400 text-sm">简约而精致，强调留白，遵循"少即是多"的理念</p>
+                        </div>
+                        
+                        <!-- 大胆现代风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="大胆现代风格">
+                            <span class="style-count">2</span>
+                            <h3 class="text-lg font-bold mb-2">大胆现代风格 (Bold Modern)</h3>
+                            <p class="text-gray-400 text-sm">鲜艳、大胆的色彩组合，打破传统排版规则</p>
+                        </div>
+                        
+                        <!-- 优雅复古风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="优雅复古风格">
+                            <span class="style-count">3</span>
+                            <h3 class="text-lg font-bold mb-2">优雅复古风格 (Elegant Vintage)</h3>
+                            <p class="text-gray-400 text-sm">经典复古美学与历史感，重现20世纪初期印刷品的精致</p>
+                        </div>
+                        
+                        <!-- 未来科技风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="未来科技风格">
+                            <span class="style-count">4</span>
+                            <h3 class="text-lg font-bold mb-2">未来科技风格 (Futuristic Tech)</h3>
+                            <p class="text-gray-400 text-sm">高科技界面设计，呈现高度发达的数字界面美学</p>
+                        </div>
+                        
+                        <!-- 斯堪的纳维亚风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="斯堪的纳维亚风格">
+                            <span class="style-count">5</span>
+                            <h3 class="text-lg font-bold mb-2">斯堪的纳维亚风格 (Scandinavian)</h3>
+                            <p class="text-gray-400 text-sm">北欧设计的简约与功能美学，简约而功能性强</p>
+                        </div>
+                        
+                        <!-- 艺术装饰风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="艺术装饰风格">
+                            <span class="style-count">6</span>
+                            <h3 class="text-lg font-bold mb-2">艺术装饰风格 (Art Deco)</h3>
+                            <p class="text-gray-400 text-sm">重现1920-30年代的奢华与几何美学，黑金配色方案</p>
+                        </div>
+                        
+                        <!-- 日式极简风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="日式极简风格">
+                            <span class="style-count">7</span>
+                            <h3 class="text-lg font-bold mb-2">日式极简风格 (Japanese Minimalism)</h3>
+                            <p class="text-gray-400 text-sm">体现"侘寂"美学，接受不完美、无常与不完整的哲学</p>
+                        </div>
+                        
+                        <!-- 后现代解构风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="后现代解构风格">
+                            <span class="style-count">8</span>
+                            <h3 class="text-lg font-bold mb-2">后现代解构风格 (Postmodern)</h3>
+                            <p class="text-gray-400 text-sm">彻底打破传统设计规则和网格系统，故意不规则且混乱</p>
+                        </div>
+                        
+                        <!-- 朋克风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="朋克风格">
+                            <span class="style-count">9</span>
+                            <h3 class="text-lg font-bold mb-2">朋克风格 (Punk)</h3>
+                            <p class="text-gray-400 text-sm">DIY精神和反叛文化，粗糙、手工制作的视觉效果</p>
+                        </div>
+                        
+                        <!-- 英伦摇滚风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="英伦摇滚风格">
+                            <span class="style-count">10</span>
+                            <h3 class="text-lg font-bold mb-2">英伦摇滚风格 (British Rock)</h3>
+                            <p class="text-gray-400 text-sm">融合英国传统元素与反叛摇滚美学，英国国旗色系</p>
+                        </div>
+                        
+                        <!-- 黑金属风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="黑金属风格">
+                            <span class="style-count">11</span>
+                            <h3 class="text-lg font-bold mb-2">黑金属风格 (Black Metal)</h3>
+                            <p class="text-gray-400 text-sm">极致黑暗美学和神秘主义，纯黑或极深灰度背景</p>
+                        </div>
+                        
+                        <!-- 孟菲斯风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="孟菲斯风格">
+                            <span class="style-count">12</span>
+                            <h3 class="text-lg font-bold mb-2">孟菲斯风格 (Memphis Design)</h3>
+                            <p class="text-gray-400 text-sm">重现80年代意大利设计运动的前卫美学，鲜艳不协调色彩</p>
+                        </div>
+                        
+                        <!-- 赛博朋克风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="赛博朋克风格">
+                            <span class="style-count">13</span>
+                            <h3 class="text-lg font-bold mb-2">赛博朋克风格 (Cyberpunk)</h3>
+                            <p class="text-gray-400 text-sm">"高科技，低生活"的反乌托邦美学，霓虹灯效果</p>
+                        </div>
+                        
+                        <!-- 波普艺术风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="波普艺术风格">
+                            <span class="style-count">14</span>
+                            <h3 class="text-lg font-bold mb-2">波普艺术风格 (Pop Art)</h3>
+                            <p class="text-gray-400 text-sm">重现60年代艺术运动的大胆美学，亮丽原色</p>
+                        </div>
+                        
+                        <!-- 瑞士国际主义风格的解构版 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="瑞士国际主义风格的解构版">
+                            <span class="style-count">15</span>
+                            <h3 class="text-lg font-bold mb-2">瑞士解构风格 (Deconstructed Swiss)</h3>
+                            <p class="text-gray-400 text-sm">在严格网格系统上进行有意识的破坏和重组</p>
+                        </div>
+                        
+                        <!-- 蒸汽波美学 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="蒸汽波美学">
+                            <span class="style-count">16</span>
+                            <h3 class="text-lg font-bold mb-2">蒸汽波美学 (Vaporwave)</h3>
+                            <p class="text-gray-400 text-sm">互联网亚文化的怀旧未来主义，粉紫色到青蓝色渐变</p>
+                        </div>
+                        
+                        <!-- 新表现主义风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="新表现主义风格">
+                            <span class="style-count">17</span>
+                            <h3 class="text-lg font-bold mb-2">新表现主义风格 (Neo-Expressionism)</h3>
+                            <p class="text-gray-400 text-sm">80年代艺术运动的原始能量和情感表达，强烈色彩</p>
+                        </div>
+                        
+                        <!-- 极简主义的极端版本 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="极简主义的极端版本">
+                            <span class="style-count">18</span>
+                            <h3 class="text-lg font-bold mb-2">极端极简主义 (Extreme Minimalism)</h3>
+                            <p class="text-gray-400 text-sm">将"少即是多"推向极致，90%留白空间</p>
+                        </div>
+                        
+                        <!-- 新未来主义 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="新未来主义">
+                            <span class="style-count">19</span>
+                            <h3 class="text-lg font-bold mb-2">新未来主义 (Neo-Futurism)</h3>
+                            <p class="text-gray-400 text-sm">当代建筑和产品设计中的前沿美学，流线型曲线</p>
+                        </div>
+                        
+                        <!-- 超现实主义数字拼贴 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="超现实主义数字拼贴">
+                            <span class="style-count">20</span>
+                            <h3 class="text-lg font-bold mb-2">超现实主义拼贴 (Surrealist Collage)</h3>
+                            <p class="text-gray-400 text-sm">创造梦境般的视觉叙事，组合不相关元素</p>
+                        </div>
+                        
+                        <!-- 新巴洛克数字风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="新巴洛克数字风格">
+                            <span class="style-count">21</span>
+                            <h3 class="text-lg font-bold mb-2">新巴洛克数字风格 (Neo-Baroque)</h3>
+                            <p class="text-gray-400 text-sm">17世纪华丽美学的数字重现，极其丰富的装饰</p>
+                        </div>
+                        
+                        <!-- 液态数字形态主义 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="液态数字形态主义">
+                            <span class="style-count">22</span>
+                            <h3 class="text-lg font-bold mb-2">液态数字形态主义 (Liquid Digital)</h3>
+                            <p class="text-gray-400 text-sm">流体动力学与数字艺术结合，高级流体渐变</p>
+                        </div>
+                        
+                        <!-- 超感官极简主义 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="超感官极简主义">
+                            <span class="style-count">23</span>
+                            <h3 class="text-lg font-bold mb-2">超感官极简主义 (Hypersensory)</h3>
+                            <p class="text-gray-400 text-sm">微妙的纹理和动态响应创造深层次感官体验</p>
+                        </div>
+                        
+                        <!-- 新表现主义数据可视化 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="新表现主义数据可视化">
+                            <span class="style-count">24</span>
+                            <h3 class="text-lg font-bold mb-2">表现主义数据可视化 (Data Art)</h3>
+                            <p class="text-gray-400 text-sm">抽象表现主义与数据可视化融合，看似随意的笔触</p>
+                        </div>
+                        
+                        <!-- 维多利亚风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="维多利亚风格">
+                            <span class="style-count">25</span>
+                            <h3 class="text-lg font-bold mb-2">维多利亚风格 (Victorian Style)</h3>
+                            <p class="text-gray-400 text-sm">19世纪英国维多利亚时期的华丽印刷美学</p>
+                        </div>
+                        
+                        <!-- 包豪斯风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="包豪斯风格">
+                            <span class="style-count">26</span>
+                            <h3 class="text-lg font-bold mb-2">包豪斯风格 (Bauhaus)</h3>
+                            <p class="text-gray-400 text-sm">20世纪早期德国包豪斯学校的功能主义美学</p>
+                        </div>
+                        
+                        <!-- 构成主义风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="构成主义风格">
+                            <span class="style-count">27</span>
+                            <h3 class="text-lg font-bold mb-2">构成主义风格 (Constructivism)</h3>
+                            <p class="text-gray-400 text-sm">20世纪早期俄国前卫艺术运动的革命性美学</p>
+                        </div>
+                        
+                        <!-- 再次的孟菲斯风格 (因为原文有两次) -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="孟菲斯设计风格">
+                            <span class="style-count">28</span>
+                            <h3 class="text-lg font-bold mb-2">孟菲斯设计风格 (Memphis Milano)</h3>
+                            <p class="text-gray-400 text-sm">1980年代意大利设计小组的前卫美学与不协调色彩</p>
+                        </div>
+                        
+                        <!-- 德国表现主义风格 -->
+                        <div class="style-card bg-gray-900 p-4 rounded-lg w-full flex-shrink-0 relative" data-style="德国表现主义风格">
+                            <span class="style-count">29</span>
+                            <h3 class="text-lg font-bold mb-2">德国表现主义风格 (German Expressionism)</h3>
+                            <p class="text-gray-400 text-sm">20世纪初期德国表现主义运动的强烈情感表达</p>
+                        </div>
+                    </div>
+                    
+                    <button id="generate-btn" class="w-full bg-gradient-to-r from-pink-500 to-blue-500 text-white py-3 rounded-lg font-bold text-lg mt-4 hover:opacity-90 transition-opacity">
+                        生成卡片
+                    </button>
+                </div>
+                
+                <!-- 右侧预览区 -->
+                <div class="bg-gray-800 bg-opacity-50 rounded-xl p-6 neon-border">
+                    <h2 class="text-2xl font-bold mb-4">卡片预览</h2>
+                    <div id="loading" class="hidden flex-col items-center justify-center py-12">
+                        <div class="loading-spinner mb-4"></div>
+                        <p class="text-gray-300">正在生成精美卡片，请稍候...</p>
+                    </div>
+                    <div id="card-preview" class="bg-gray-900 rounded-lg p-6 flex items-center justify-center min-h-[380px]">
+                        <p class="text-gray-500 text-center">
+                            <i class="fas fa-image text-4xl mb-3 block"></i>
+                            卡片预览将显示在这里<br>
+                            <small class="text-xs opacity-70">注意：部分文字不可编辑</small>
+                        </p>
+                    </div>
+                    <div id="preview-actions" class="mt-6 flex justify-end items-center hidden">
+                        <div class="flex">
+                            <button id="download-btn" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg flex items-center">
+                                <i class="fas fa-download mr-1"></i> 下载
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-black bg-opacity-80 py-6 text-center text-gray-500">
+        <div class="container mx-auto px-4">
+            <p>© 2025 VISIONARY AI创作平台. 保留所有权利.</p>
+        </div>
+    </footer>
+    
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav md:hidden">
+        <div class="container mx-auto">
+            <div class="flex justify-between items-center px-6">
+                <a href="/" class="flex flex-col items-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">首页</span>
+                </a>
+                <a href="/create" class="flex flex-col items-center">
+                    <i class="fas fa-image text-xl"></i>
+                    <span class="text-xs mt-1">生成图片</span>
+                </a>
+                <a href="/create-card" class="flex flex-col items-center text-pink-500">
+                    <i class="fas fa-id-card text-xl"></i>
+                    <span class="text-xs mt-1">生成卡片</span>
+                </a>
+                <a href="/unified-history" class="flex flex-col items-center">
+                    <i class="fas fa-history text-xl"></i>
+                    <span class="text-xs mt-1">创作历史</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const styleCards = document.querySelectorAll('.style-card');
+            const contentInput = document.getElementById('card-content');
+            const generateBtn = document.getElementById('generate-btn');
+            const cardPreview = document.getElementById('card-preview');
+            const loading = document.getElementById('loading');
+            const previewActions = document.getElementById('preview-actions');
+            const downloadBtn = document.getElementById('download-btn');
+            
+            let selectedStyle = null;
+            
+            // 风格选择
+            styleCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    styleCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedStyle = this.getAttribute('data-style');
+                });
+            });
+            
+            // 生成卡片
+            generateBtn.addEventListener('click', function() {
+                const content = contentInput.value.trim();
+                
+                if (!content) {
+                    alert('请输入卡片内容');
+                    return;
+                }
+                
+                if (!selectedStyle) {
+                    alert('请选择一种风格');
+                    return;
+                }
+                
+                // 显示加载状态
+                cardPreview.style.display = 'none';
+                loading.style.display = 'flex';
+                previewActions.classList.add('hidden');
+                
+                // 调用后端API
+                fetch('/generate-card', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        style: selectedStyle
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 隐藏加载状态
+                    loading.style.display = 'none';
+                    
+                    if (data.success) {
+                        // 重置预览区域样式，确保正确的布局
+                        cardPreview.style = '';
+                        cardPreview.removeAttribute('style');
+                        
+                        // 设置基础样式 - 居中显示
+                        cardPreview.style.display = 'flex';
+                        cardPreview.style.justifyContent = 'center';
+                        cardPreview.style.alignItems = 'center';
+                        cardPreview.style.width = '100%';
+                        cardPreview.style.minHeight = '400px';
+                        cardPreview.style.padding = '20px';
+                        cardPreview.style.boxSizing = 'border-box';
+                        cardPreview.style.overflow = 'auto';
+                        cardPreview.style.position = 'relative';
+                        cardPreview.style.borderRadius = '0.5rem';
+                        cardPreview.style.backgroundColor = '#111827';
+                        
+                        // 显示生成的卡片并自动添加可编辑类
+                        cardPreview.innerHTML = `<div class="card-wrapper editable" style="margin:0 auto;max-width:100%;position:relative;text-align:center;">${data.html_code}</div>`;
+                        previewActions.classList.remove('hidden');
+                        
+                        // 调整卡片内容大小以适应容器
+                        const cardWrapper = cardPreview.querySelector('.card-wrapper');
+                        const cardContent = cardWrapper.firstElementChild;
+                        
+                        if (cardContent) {
+                            // 强制移除可能导致偏移的样式
+                            cardContent.style.position = 'relative';
+                            cardContent.style.left = '0';
+                            cardContent.style.right = '0';
+                            cardContent.style.transform = 'none';
+                            cardContent.style.maxWidth = '100%';
+                            cardContent.style.margin = '0 auto';
+                            
+                            // 递归处理所有子元素确保它们都可见
+                            const allElements = cardContent.querySelectorAll('*');
+                            allElements.forEach(el => {
+                                // 保留原有样式的同时添加关键修正
+                                const originalDisplay = el.style.display;
+                                const originalColor = el.style.color;
+                                const originalBg = el.style.background;
+                                
+                                // 应用最小必要的样式覆盖
+                                el.style.maxWidth = '100%';
+                                el.style.boxSizing = 'border-box';
+                                el.style.overflow = 'visible';
+                                
+                                // 恢复必要的原始样式
+                                if (originalDisplay) el.style.display = originalDisplay;
+                                if (originalColor) el.style.color = originalColor;
+                                if (originalBg) el.style.background = originalBg;
+                                
+                                // 修复定位问题
+                                if (el.style.position === 'absolute') {
+                                    el.style.position = 'relative';
+                                }
+                                
+                                // 移除可能导致偏移的属性
+                                el.style.left = 'auto';
+                                el.style.right = 'auto';
+                                
+                                // 处理文本对齐，仅在需要时
+                                if (el.tagName === 'P' || el.tagName === 'H1' || el.tagName === 'H2' || 
+                                    el.tagName === 'H3' || el.tagName === 'H4' || el.tagName === 'DIV') {
+                                    // 如果没有文本对齐属性，设为居中
+                                    if (!window.getComputedStyle(el).textAlign || 
+                                        window.getComputedStyle(el).textAlign === 'start') {
+                                        el.style.textAlign = 'center';
+                                    }
+                                }
+                            });
+                            
+                            // 自动应用编辑模式，使文本可编辑
+                            setTimeout(() => {
+                                makeTextElementsEditable();
+                            }, 300);
+                        }
+                    } else {
+                        cardPreview.style.display = 'flex';
+                        cardPreview.innerHTML = `
+                            <div class="text-red-500 text-center">
+                                <i class="fas fa-exclamation-circle text-4xl mb-3 block"></i>
+                                生成失败: ${data.error || '未知错误'}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    // 隐藏加载状态
+                    loading.style.display = 'none';
+                    cardPreview.style.display = 'flex';
+                    
+                    cardPreview.innerHTML = `
+                        <div class="text-red-500 text-center">
+                            <i class="fas fa-exclamation-circle text-4xl mb-3 block"></i>
+                            发生错误: ${error}
+                        </div>
+                    `;
+                });
+            });
+            
+            // 下载卡片
+            downloadBtn.addEventListener('click', function() {
+                // 临时移除编辑状态以便正确下载
+                const editableElements = cardPreview.querySelectorAll('.editable-text');
+                editableElements.forEach(el => {
+                    el.removeAttribute('contenteditable');
+                    el.classList.remove('editing');
+                });
+                
+                // 确保卡片包装器存在
+                const cardWrapper = cardPreview.querySelector('.card-wrapper');
+                if (cardWrapper) {
+                    html2canvas(cardWrapper, {
+                        scale: 2,
+                        backgroundColor: null,
+                        onclone: function(clonedDoc) {
+                            // 移除克隆文档中的所有边框和编辑样式
+                            const clonedElements = clonedDoc.querySelectorAll('.editable-text');
+                            clonedElements.forEach(el => {
+                                el.style.border = 'none';
+                                el.style.backgroundColor = 'transparent';
+                                el.style.padding = '0';
+                            });
+                        }
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = 'visionary-card.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        
+                        // 恢复可编辑状态
+                        editableElements.forEach(el => {
+                            el.setAttribute('contenteditable', 'true');
+                        });
+                    });
+                } else {
+                    alert('卡片不存在，请先生成卡片');
+                }
+            });
+
+            // 使所有文本元素都可编辑
+            function makeTextElementsEditable() {
+                // 获取卡片容器
+                const cardWrapper = cardPreview.querySelector('.card-wrapper');
+                if (!cardWrapper) return;
+                
+                // 添加提示信息
+                const editHint = document.createElement('div');
+                editHint.className = 'text-xs text-blue-400 mb-2 animate-pulse';
+                editHint.innerHTML = '<i class="fas fa-info-circle mr-1"></i> 提示：所有文字均可编辑';
+                cardWrapper.prepend(editHint);
+                
+                // 特殊处理标题中的换行 - 尤其是<h1>标签内有<br>的情况
+                const headings = cardWrapper.querySelectorAll('.main-title, h1, h2, h3');
+                headings.forEach(heading => {
+                    // 检查标题内是否有<br>标签
+                    if (heading.innerHTML.includes('<br>') || heading.innerHTML.includes('<br/>') || heading.innerHTML.includes('<br />')) {
+                        console.log('处理包含<br>的标题:', heading.innerHTML);
+                        // 分割HTML，处理<br>前后的文本
+                        const parts = heading.innerHTML.split(/<br\s*\/?>/i);
+                        let newHtml = '';
+                        
+                        // 为每个部分创建可编辑的span
+                        parts.forEach((part, index) => {
+                            // 删除引号，避免HTML解析问题
+                            part = part.replace(/"/g, '&quot;');
+                            
+                            // 如果部分不为空，添加可编辑span
+                            if (part.trim()) {
+                                newHtml += `<span class="editable-text" contenteditable="true">${part.trim()}</span>`;
+                            }
+                            
+                            // 在非最后一个部分后添加<br>
+                            if (index < parts.length - 1) {
+                                newHtml += '<br>';
+                            }
+                        });
+                        
+                        // 替换标题内容
+                        heading.innerHTML = newHtml;
+                    } else if (heading.childElementCount === 0 && heading.textContent.trim()) {
+                        // 如果是纯文本标题，直接设为可编辑
+                        heading.classList.add('editable-text');
+                        heading.setAttribute('contenteditable', 'true');
+                    }
+                });
+
+                // 特殊处理列表项
+                const listItems = cardWrapper.querySelectorAll('li');
+                listItems.forEach(li => {
+                    // 检查是否有::before伪元素
+                    const style = window.getComputedStyle(li, '::before');
+                    if (style && style.content && style.content !== 'none') {
+                        // 列表项内的特殊处理 - 创建内部 span 来包装文本内容使其可编辑
+                        const text = li.innerHTML;
+                        // 如果已经有 ::before 标记，我们需要替换内部内容而不是整个 li
+                        if (text.includes('::before')) {
+                            // 提取出 ::before 后面的实际文本内容
+                            const textContent = text.split('::before').pop();
+                            if (textContent) {
+                                // 用可编辑的 span 包装实际内容
+                                li.innerHTML = text.replace(textContent, `<span class="editable-text" contenteditable="true">${textContent}</span>`);
+                            }
+                        } else {
+                            // 直接包装整个内容
+                            li.innerHTML = `<span class="editable-text" contenteditable="true">${text}</span>`;
+                        }
+                    } else {
+                        // 如果没有伪元素，直接设置为可编辑
+                        li.classList.add('editable-text');
+                        li.setAttribute('contenteditable', 'true');
+                    }
+                });
+                
+                // 特殊处理带有冒号的节点，如NOTE: xxx
+                const noteElements = cardWrapper.querySelectorAll('.editor-note, [class*="note"], [class*="Note"]');
+                noteElements.forEach(noteEl => {
+                    // 检查是否包含冒号分隔的文本
+                    const text = noteEl.textContent;
+                    if (text.includes(':')) {
+                        // 清除现有内容
+                        const originalHTML = noteEl.innerHTML;
+                        
+                        // 如果已经包含了一些span，我们需要更小心地处理
+                        if (originalHTML.includes('<span') && originalHTML.includes('</span>')) {
+                            // 尝试找出冒号后面的部分
+                            const colonIndex = text.indexOf(':');
+                            if (colonIndex > -1 && colonIndex < text.length - 1) {
+                                const afterColon = text.substring(colonIndex + 1).trim();
+                                
+                                // 将innerHTML中冒号后面的文本部分替换为可编辑的span
+                                // 首先检查冒号是否在某个span内
+                                const spanMatch = /<span[^>]*>(.*?)<\/span>(.*)/.exec(originalHTML);
+                                if (spanMatch && spanMatch[2].includes(':')) {
+                                    // 冒号在span后面
+                                    const parts = spanMatch[2].split(':');
+                                    if (parts.length > 1) {
+                                        noteEl.innerHTML = `${spanMatch[0].split(':')[0]}: <span class="editable-text" contenteditable="true">${afterColon}</span>`;
+                                    }
+                                } else {
+                                    // 尝试更直接的方法替换冒号后的文本
+                                    noteEl.innerHTML = originalHTML.replace(
+                                        new RegExp(`:(.*?)$`), 
+                                        `: <span class="editable-text" contenteditable="true">${afterColon}</span>`
+                                    );
+                                }
+                            }
+                        } else {
+                            // 简单情况：将文本拆分为冒号前后部分
+                            const parts = text.split(':');
+                            if (parts.length > 1) {
+                                const prefix = parts[0].trim();
+                                const content = parts.slice(1).join(':').trim();
+                                noteEl.innerHTML = `<span>${prefix}</span>: <span class="editable-text" contenteditable="true">${content}</span>`;
+                            }
+                        }
+                    }
+                });
+                
+                // 选择所有可能包含文本的元素（排除已处理的列表项）
+                const textElements = cardWrapper.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, div, blockquote');
+                
+                textElements.forEach((el) => {
+                    // 只处理包含文本内容且不是容器的元素，并且不是已处理的列表项
+                    if (el.childElementCount === 0 && el.textContent.trim() && el !== editHint && !el.closest('li.editable-text') && !el.hasAttribute('contenteditable')) {
+                        // 所有文本元素都标记为可编辑
+                        el.classList.add('editable-text');
+                        el.setAttribute('contenteditable', 'true');
+                    }
+                });
+                
+                // 为所有添加的可编辑元素绑定事件监听器
+                const editableElements = cardWrapper.querySelectorAll('.editable-text');
+                editableElements.forEach(el => {
+                    if (!el.getAttribute('data-events-added')) {
+                        el.addEventListener('focus', function() {
+                            this.classList.add('editing');
+                        });
+                        
+                        el.addEventListener('blur', function() {
+                            this.classList.remove('editing');
+                        });
+                        
+                        el.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                this.blur();
+                            }
+                        });
+                        
+                        el.setAttribute('data-events-added', 'true');
+                    }
+                });
+            }
+            
+            // 移动端菜单切换
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+    <!-- 添加html2canvas库，用于将HTML转换为图像 -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</body>
+</html> 

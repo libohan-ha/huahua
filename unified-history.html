@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创作历史 - VISIONARY</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-neon-pink: #ff1493;
+            --color-electric-blue: #00ffff;
+            --color-purple: #9d4edd;
+            --color-dark-blue: #0a1128;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+        
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5%, 5%) scale(1.1); }
+            50% { transform: translate(0, 10%) scale(0.9); }
+            75% { transform: translate(-5%, 5%) scale(1.05); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, var(--color-neon-pink), var(--color-electric-blue), var(--color-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 10px var(--color-neon-pink),
+                      0 0 20px var(--color-electric-blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .image-container {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .image-container img {
+            transition: transform 0.5s ease;
+        }
+        
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+        
+        .card-container {
+            max-height: none;
+            overflow: visible;
+            width: 100%;
+            background-color: rgba(17, 24, 39, 0.7);
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .card-container > * {
+            max-width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 auto !important;
+        }
+        
+        .tab {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-neon-pink), var(--color-electric-blue));
+            border-radius: 3px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+        }
+        
+        main {
+            flex: 1;
+            padding-bottom: 80px; /* 为底部导航留出空间 */
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* 确保内容居中显示 */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .grid {
+            margin: 0 auto;
+        }
+        
+        /* 顶部导航栏固定样式 */
+        nav.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--color-electric-blue);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+            padding: 50px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: #1f2937; /* Dark background for content */
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 1000px; /* Adjust max width as needed */
+            height: 90%;
+            max-height: 800px; /* Adjust max height */
+            overflow-y: auto; /* Allow scrolling within the content */
+            position: relative;
+            border-radius: 10px;
+            display: flex; /* Use flexbox to center */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+        
+         .modal-inner-content {
+             width: 100%;
+             height: auto; /* Adjust height based on content */
+             max-height: 100%; /* Ensure it doesn't overflow */
+             overflow: auto;
+             text-align: center; /* Center inline content */
+         }
+
+        .close-modal {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black">
+    <!-- 动态背景 -->
+    <div class="animated-bg">
+        <div class="bg-blob" style="top: 15%; left: 10%; width: 500px; height: 500px; background: rgba(255, 20, 147, 0.2); animation-delay: 0s;"></div>
+        <div class="bg-blob" style="top: 50%; left: 60%; width: 600px; height: 600px; background: rgba(0, 255, 255, 0.2); animation-delay: 2s;"></div>
+        <div class="bg-blob" style="top: 70%; left: 20%; width: 400px; height: 400px; background: rgba(157, 78, 221, 0.2); animation-delay: 4s;"></div>
+    </div>
+    
+    <!-- 顶部导航栏 -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold gradient-text">VISIONARY</h1>
+            </div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors">生成网页</a>
+                <a href="/unified-history" class="text-pink-500">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold">退出</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-white text-2xl" id="mobile-menu-button"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+        
+        <!-- 移动菜单 -->
+        <div id="mobile-menu" class="hidden bg-black bg-opacity-95 w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="/" class="text-white hover:text-pink-500 transition-colors py-2 block">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors py-2 block">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors py-2 block">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors py-2 block">生成网页</a>
+                <a href="/unified-history" class="text-pink-500 py-2 block">创作历史</a>
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold inline-block text-center">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-24 pb-12">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8 text-center gradient-text">创作历史</h1>
+            
+            <!-- 选项卡导航 -->
+            <div class="flex justify-center mb-8">
+                <div class="flex space-x-12 border-b border-gray-800">
+                    <div id="tab-images" class="tab active text-lg font-bold py-2 px-4">
+                        <i class="fas fa-image mr-2"></i>图片
+                    </div>
+                    <div id="tab-cards" class="tab text-lg font-bold py-2 px-4">
+                        <i class="fas fa-id-card mr-2"></i>卡片
+                    </div>
+                    <div id="tab-webpages" class="tab text-lg font-bold py-2 px-4">
+                        <i class="fas fa-globe mr-2"></i>网页
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图片选项卡内容 -->
+            <div id="content-images" class="tab-content active">
+                <div id="images-loading" class="py-12 text-center flex justify-center">
+                    <div class="w-full max-w-2xl text-center">
+                        <div class="loading-spinner mb-4"></div>
+                        <p class="text-gray-400">正在加载图片历史...</p>
+                    </div>
+                </div>
+                
+                <div id="images-content" class="hidden">
+                    <!-- 图片内容将通过JS动态加载 -->
+                </div>
+            </div>
+            
+            <!-- 卡片选项卡内容 -->
+            <div id="content-cards" class="tab-content w-full">
+                <div id="cards-loading" class="py-12 text-center flex justify-center">
+                    <div class="w-full max-w-2xl text-center">
+                        <div class="loading-spinner mb-4"></div>
+                        <p class="text-gray-400">正在加载卡片历史...</p>
+                    </div>
+                </div>
+                
+                <div id="cards-content" class="hidden w-full">
+                    <!-- 卡片内容将通过JS动态加载 -->
+                </div>
+            </div>
+            
+            <!-- 网页选项卡内容 -->
+            <div id="content-webpages" class="tab-content">
+                <div id="webpages-loading" class="py-12 text-center flex justify-center">
+                    <div class="w-full max-w-2xl text-center">
+                        <div class="loading-spinner mb-4"></div>
+                        <p class="text-gray-400">正在加载网页历史...</p>
+                    </div>
+                </div>
+                
+                <div id="webpages-content" class="hidden">
+                    <!-- 网页内容将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-black bg-opacity-80 py-6 text-center text-gray-500">
+        <div class="container mx-auto px-4">
+            <p>© 2025 VISIONARY AI创作平台. 保留所有权利.</p>
+        </div>
+    </footer>
+    
+    <!-- 卡片查看模态框 -->
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCardModal()">&times;</span>
+            <div id="modal-card-content" class="modal-inner-content">
+                <!-- 卡片 HTML 将在这里加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav md:hidden">
+        <div class="container mx-auto">
+            <div class="flex justify-between items-center px-6">
+                <a href="/" class="flex flex-col items-center">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">首页</span>
+                </a>
+                <a href="/create" class="flex flex-col items-center">
+                    <i class="fas fa-image text-xl"></i>
+                    <span class="text-xs mt-1">生成图片</span>
+                </a>
+                <a href="/create-card" class="flex flex-col items-center">
+                    <i class="fas fa-id-card text-xl"></i>
+                    <span class="text-xs mt-1">生成卡片</span>
+                </a>
+                <a href="/unified-history" class="flex flex-col items-center text-pink-500">
+                    <i class="fas fa-history text-xl"></i>
+                    <span class="text-xs mt-1">创作历史</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- html2canvas库，用于将HTML转换为图像 -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <script>
+        // 选项卡切换
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单切换
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有活跃状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // 添加当前活跃状态
+                    tab.classList.add('active');
+                    const contentId = 'content-' + tab.id.split('-')[1];
+                    document.getElementById(contentId).classList.add('active');
+                });
+            });
+            
+            // 初始加载图片历史
+            loadImages();
+            
+            // 当切换到卡片选项卡时加载卡片历史
+            document.getElementById('tab-cards').addEventListener('click', loadCards);
+            
+            // 当切换到网页选项卡时加载网页历史
+            document.getElementById('tab-webpages').addEventListener('click', loadWebpages);
+        });
+        
+        // 加载图片历史
+        function loadImages() {
+            const loadingEl = document.getElementById('images-loading');
+            const contentEl = document.getElementById('images-content');
+            
+            // 添加一个标记，避免重复加载
+            if (contentEl.dataset.loaded === 'true') {
+                return;
+            }
+            
+            loadingEl.classList.remove('hidden');
+            contentEl.classList.add('hidden');
+            
+            fetch('/api/image-history')
+                .then(response => response.json())
+                .then(data => {
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                    
+                    if (data.success && data.images && data.images.length > 0) {
+                        const imagesHtml = renderImages(data.images);
+                        contentEl.innerHTML = imagesHtml;
+                    } else {
+                        contentEl.innerHTML = renderEmptyState('images');
+                    }
+                    
+                    // 设置已加载标记
+                    contentEl.dataset.loaded = 'true';
+                })
+                .catch(error => {
+                    console.error('获取图片历史失败:', error);
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                    contentEl.innerHTML = `
+                        <div class="flex justify-center w-full">
+                            <div class="text-center py-12 w-full max-w-2xl">
+                                <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+                                <h3 class="text-xl font-bold text-red-400">加载失败</h3>
+                                <p class="text-gray-400 mt-2">无法加载图片历史，请重试</p>
+                                <button onclick="loadImages()" class="mt-4 px-6 py-2 bg-gray-800 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-redo mr-2"></i>重试
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+        
+        // 加载卡片历史
+        function loadCards() {
+            const loadingEl = document.getElementById('cards-loading');
+            const contentEl = document.getElementById('cards-content');
+            
+            // 添加一个标记，避免重复加载
+            if (contentEl.dataset.loaded === 'true') {
+                return;
+            }
+            
+            loadingEl.classList.remove('hidden');
+            contentEl.classList.add('hidden');
+            
+            fetch('/api/card-history')
+                .then(response => response.json())
+                .then(data => {
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                    
+                    if (data.success && data.cards && data.cards.length > 0) {
+                        const cardsHtml = renderCards(data.cards);
+                        contentEl.innerHTML = cardsHtml;
+                    } else {
+                        contentEl.innerHTML = renderEmptyState('cards');
+                    }
+                    
+                    // 设置已加载标记
+                    contentEl.dataset.loaded = 'true';
+                })
+                .catch(error => {
+                    console.error('获取卡片历史失败:', error);
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                    contentEl.innerHTML = `
+                        <div class="flex justify-center w-full">
+                            <div class="text-center py-12 w-full max-w-2xl">
+                                <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+                                <h3 class="text-xl font-bold text-red-400">加载失败</h3>
+                                <p class="text-gray-400 mt-2">无法加载卡片历史，请重试</p>
+                                <button onclick="loadCards()" class="mt-4 px-6 py-2 bg-gray-800 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-redo mr-2"></i>重试
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+        
+        // 加载网页历史
+        function loadWebpages() {
+            const loadingEl = document.getElementById('webpages-loading');
+            const contentEl = document.getElementById('webpages-content');
+            
+            // 添加一个标记，避免重复加载
+            if (contentEl.dataset.loaded === 'true') {
+                return;
+            }
+            
+            loadingEl.classList.remove('hidden');
+            contentEl.classList.add('hidden');
+            
+            fetch('/api/webpage-history')
+                .then(response => response.json())
+                .then(data => {
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                    
+                    if (data.success && data.webpages && data.webpages.length > 0) {
+                        const webpagesHtml = renderWebpages(data.webpages);
+                        contentEl.innerHTML = webpagesHtml;
+                    } else {
+                        contentEl.innerHTML = renderEmptyState('webpages');
+                    }
+                    
+                    // 设置已加载标记
+                    contentEl.dataset.loaded = 'true';
+                })
+                .catch(error => {
+                    console.error('获取网页历史失败:', error);
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                    contentEl.innerHTML = `
+                        <div class="flex justify-center w-full">
+                            <div class="text-center py-12 w-full max-w-2xl">
+                                <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+                                <h3 class="text-xl font-bold text-red-400">加载失败</h3>
+                                <p class="text-gray-400 mt-2">无法加载网页历史，请重试</p>
+                                <button onclick="loadWebpages()" class="mt-4 px-6 py-2 bg-gray-800 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-redo mr-2"></i>重试
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+        
+        // 渲染图片列表
+        function renderImages(images) {
+            if (!images || images.length === 0) {
+                return renderEmptyState('images');
+            }
+            
+            // Add outer wrapper for consistent centering
+            let html = '<div class="w-full max-w-7xl mx-auto">'; 
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="image-grid">'; // Remove mx-auto max-w-7xl from grid
+            
+            images.forEach(image => {
+                const dateStr = formatDate(image.created_at);
+                html += `
+                    <div class="bg-gray-800 bg-opacity-50 rounded-xl overflow-hidden neon-border image-card" data-image-id="${image.id}">
+                        <div class="image-container h-64">
+                            <img src="${image.image_url}" alt="${image.prompt || '生成图片'}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-400 mb-2">${dateStr}</p>
+                            <h3 class="text-lg font-semibold mb-2 truncate">${image.prompt || '无提示词'}</h3>
+                            <p class="text-sm text-gray-400">风格: ${image.style || '默认'}</p>
+                            <div class="flex justify-between mt-4">
+                                <a href="#" onclick="downloadImage('${image.image_url}', '${image.prompt || '生成图片'}')" class="text-blue-400 hover:text-blue-300 flex items-center">
+                                    <i class="fas fa-download mr-1"></i> 下载
+                                </a>
+                                <button onclick="requestDeleteImage('${image.id}', this)" class="text-red-400 hover:text-red-300 flex items-center px-3 py-1 rounded transition-colors duration-200" data-original-text='<i class="fas fa-trash-alt mr-1"></i> 删除'>
+                                    <i class="fas fa-trash-alt mr-1"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>'; // Close grid
+            html += '</div>'; // Close outer wrapper
+            return html;
+        }
+        
+        // 请求删除图片 (替换 confirmDeleteImage)
+        function requestDeleteImage(imageId, buttonElement) {
+            // 清除可能存在的其他按钮的确认状态和超时
+            document.querySelectorAll('.image-card button[data-confirming="true"]').forEach(btn => {
+                if (btn !== buttonElement) {
+                    revertDeleteButton(btn);
+                }
+            });
+
+            if (buttonElement.dataset.confirming === 'true') {
+                // 第二次点击，执行删除
+                clearTimeout(parseInt(buttonElement.dataset.timeoutId));
+                deleteImage(imageId, buttonElement);
+            } else {
+                // 第一次点击，进入确认状态
+                // 保存原始 HTML
+                if (!buttonElement.dataset.originalHtml) {
+                   buttonElement.dataset.originalHtml = buttonElement.innerHTML;
+                }
+                buttonElement.innerHTML = '<i class="fas fa-check mr-1"></i> 确认?';
+                buttonElement.classList.remove('text-red-400', 'hover:text-red-300');
+                buttonElement.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white');
+                buttonElement.dataset.confirming = 'true';
+
+                // 设置超时恢复按钮
+                const timeoutId = setTimeout(() => {
+                    revertDeleteButton(buttonElement);
+                }, 5000); // 5秒确认时间
+                buttonElement.dataset.timeoutId = timeoutId.toString();
+            }
+        }
+
+        // 恢复删除按钮状态
+        function revertDeleteButton(buttonElement) {
+             if (buttonElement.dataset.originalHtml) {
+                 buttonElement.innerHTML = buttonElement.dataset.originalHtml;
+             }
+            buttonElement.classList.remove('bg-red-600', 'hover:bg-red-700', 'text-white');
+            buttonElement.classList.add('text-red-400', 'hover:text-red-300');
+            delete buttonElement.dataset.confirming;
+            delete buttonElement.dataset.timeoutId;
+            delete buttonElement.dataset.originalHtml; // 清理存储的原始HTML
+        }
+
+        // 删除图片功能 (接收 buttonElement 以便在失败时恢复)
+        function deleteImage(imageId, buttonElement) {
+            // 可选：添加加载状态到按钮
+            const originalHtml = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 删除中...';
+            buttonElement.disabled = true;
+
+            fetch(`/api/delete-image/${imageId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 从DOM中移除对应的图片卡片
+                    const cardToRemove = document.querySelector(`.image-card[data-image-id="${imageId}"]`);
+                    if (cardToRemove) {
+                        cardToRemove.remove();
+                        // 检查是否还有剩余卡片，如果没有则显示空状态
+                        const remainingCards = document.querySelectorAll('.image-card');
+                        if (remainingCards.length === 0) {
+                            document.getElementById('images-content').innerHTML = renderEmptyState('images');
+                        }
+                    }
+                } else {
+                    // 删除失败，恢复按钮状态并提示用户
+                    alert('删除图片失败: ' + (data.error || '未知错误')); 
+                    revertDeleteButton(buttonElement); // 使用恢复函数
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('删除图片失败:', error);
+                 // 网络或其他错误，恢复按钮状态并提示用户
+                alert('删除图片失败，请重试');
+                revertDeleteButton(buttonElement); // 使用恢复函数
+                buttonElement.disabled = false;
+            });
+        }
+        
+        // 渲染卡片列表
+        function renderCards(cards) {
+            if (!cards || cards.length === 0) {
+                return renderEmptyState('cards');
+            }
+            
+            window.cardDataStore = {}; // Store card data for modal
+            
+            let html = '<div class="w-full max-w-7xl mx-auto">'; 
+            let gridHtml = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="card-grid">'; 
+            
+            cards.forEach(card => {
+                const dateStr = formatDate(card.created_at);
+                // Store HTML code for modal access
+                window.cardDataStore[card.id] = card.html_code;
+                
+                gridHtml += `
+                    <div class="bg-gray-800 bg-opacity-50 rounded-xl overflow-hidden neon-border card-card flex flex-col justify-between" data-card-id="${card.id}">
+                        <div class="p-4">
+                            <p class="text-sm text-gray-400">${dateStr}</p>
+                            <h3 class="text-lg font-semibold mt-1">${card.style || '默认风格'}</h3>
+                             <p class="text-gray-400 mt-1 text-sm truncate">${card.content || '无内容描述'}</p> 
+                        </div>
+                        <div class="p-4 border-t border-gray-700 flex justify-between items-center space-x-2">
+                            <button onclick="openCardModal('${card.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center text-sm">
+                                <i class="fas fa-eye mr-2"></i> 查看卡片
+                            </button>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="downloadCard('${card.id}', true)" class="text-blue-400 hover:text-blue-300 flex items-center px-2 py-1 text-sm" title="下载图片">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button onclick="requestDeleteCard('${card.id}', this)" class="text-red-400 hover:text-red-300 flex items-center px-2 py-1 text-sm transition-colors duration-200" data-original-text='<i class="fas fa-trash-alt"></i>' title="删除">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            gridHtml += '</div>';
+            html += gridHtml;
+            html += '</div>';
+            return html;
+        }
+        
+        // 打开卡片模态框
+        function openCardModal(cardId) {
+            const modal = document.getElementById('card-modal');
+            const modalContent = document.getElementById('modal-card-content');
+            
+            if (window.cardDataStore && window.cardDataStore[cardId]) {
+                modalContent.innerHTML = window.cardDataStore[cardId];
+                modal.style.display = "block";
+            } else {
+                console.error("Could not find card data for ID:", cardId);
+                alert("无法加载卡片内容。");
+            }
+        }
+
+        // 关闭卡片模态框
+        function closeCardModal() {
+            const modal = document.getElementById('card-modal');
+            modal.style.display = "none";
+            document.getElementById('modal-card-content').innerHTML = ''; // Clear content
+        }
+        
+        // 点击模态框外部关闭 (可选)
+        window.onclick = function(event) {
+            const modal = document.getElementById('card-modal');
+            if (event.target == modal) {
+                closeCardModal();
+            }
+        }
+        
+        // 请求删除卡片
+        function requestDeleteCard(cardId, buttonElement) {
+            // Clear confirmations on other buttons
+            document.querySelectorAll('.card-card button[data-confirming="true"]').forEach(btn => {
+                if (btn !== buttonElement) {
+                    revertDeleteButton(btn); // Reuse the revert function
+                }
+            });
+
+            if (buttonElement.dataset.confirming === 'true') {
+                clearTimeout(parseInt(buttonElement.dataset.timeoutId));
+                deleteCard(cardId, buttonElement);
+            } else {
+                if (!buttonElement.dataset.originalHtml) {
+                   buttonElement.dataset.originalHtml = buttonElement.innerHTML;
+                }
+                buttonElement.innerHTML = '<i class="fas fa-check mr-1"></i> 确认?';
+                buttonElement.classList.remove('text-red-400', 'hover:text-red-300');
+                buttonElement.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white');
+                buttonElement.dataset.confirming = 'true';
+
+                const timeoutId = setTimeout(() => {
+                    revertDeleteButton(buttonElement);
+                }, 5000); 
+                buttonElement.dataset.timeoutId = timeoutId.toString();
+            }
+        }
+
+        // 删除卡片功能
+        function deleteCard(cardId, buttonElement) {
+            const originalHtml = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 删除中...';
+            buttonElement.disabled = true;
+
+            fetch(`/api/delete-card/${cardId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cardToRemove = document.querySelector(`.card-card[data-card-id="${cardId}"]`);
+                    if (cardToRemove) {
+                        cardToRemove.remove();
+                        const remainingCards = document.querySelectorAll('.card-card');
+                        if (remainingCards.length === 0) {
+                            document.getElementById('cards-content').innerHTML = renderEmptyState('cards');
+                        }
+                    }
+                } else {
+                    alert('删除卡片失败: ' + (data.error || '未知错误'));
+                    revertDeleteButton(buttonElement);
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('删除卡片失败:', error);
+                alert('删除卡片失败，请重试');
+                revertDeleteButton(buttonElement);
+                buttonElement.disabled = false;
+            });
+        }
+        
+        // 渲染网页列表
+        function renderWebpages(webpages) {
+            if (!webpages || webpages.length === 0) {
+                return renderEmptyState('webpages');
+            }
+            
+            let html = '<div class="w-full max-w-7xl mx-auto" id="webpage-grid">'; 
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-8">';
+            
+            webpages.forEach(webpage => {
+                const dateStr = formatDate(webpage.created_at);
+                const title = webpage.title || '未命名网页';
+                html += `
+                    <div class="bg-gray-800 bg-opacity-50 rounded-xl overflow-hidden neon-border webpage-card" data-webpage-id="${webpage.id}">
+                        <div class="p-4">
+                            <div class="mb-4"> 
+                                <p class="text-sm text-gray-400">${dateStr}</p>
+                                <h3 class="text-lg font-semibold mt-1">${title}</h3>
+                                <p class="text-gray-400 mt-1 truncate">${webpage.content || '无内容描述'}</p>
+                                <p class="text-gray-500 mt-1">风格: ${webpage.style || '默认'}</p>
+                            </div>
+                            <div class="mt-4 flex flex-wrap gap-2 items-center">  
+                                <a href="${webpage.webpage_url}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center text-sm">
+                                    <i class="fas fa-external-link-alt mr-2"></i> 查看网页
+                                </a>
+                                <button onclick="downloadWebpageHtml('${webpage.id}', '${encodeURIComponent(title.replace(/[^a-zA-Z0-9-_]/g, '_'))}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center text-sm">
+                                    <i class="fas fa-download mr-2"></i> 下载HTML
+                                </button>
+                                <button onclick="requestDeleteWebpage('${webpage.id}', this)" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center text-sm transition-colors duration-200" data-original-text='<i class="fas fa-trash-alt mr-1"></i> 删除'>
+                                     <i class="fas fa-trash-alt mr-1"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            return html;
+        }
+        
+        // 请求删除网页
+        function requestDeleteWebpage(webpageId, buttonElement) {
+             // Clear confirmations on other buttons
+            document.querySelectorAll('.webpage-card button[data-confirming="true"]').forEach(btn => {
+                if (btn !== buttonElement) {
+                    revertDeleteButton(btn); // Reuse the revert function
+                }
+            });
+
+            if (buttonElement.dataset.confirming === 'true') {
+                clearTimeout(parseInt(buttonElement.dataset.timeoutId));
+                deleteWebpage(webpageId, buttonElement);
+            } else {
+                 if (!buttonElement.dataset.originalHtml) {
+                   buttonElement.dataset.originalHtml = buttonElement.innerHTML;
+                }
+                buttonElement.innerHTML = '<i class="fas fa-check mr-1"></i> 确认?';
+                buttonElement.classList.remove('text-red-400', 'hover:text-red-300');
+                buttonElement.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white');
+                buttonElement.dataset.confirming = 'true';
+
+                const timeoutId = setTimeout(() => {
+                    revertDeleteButton(buttonElement);
+                }, 5000);
+                buttonElement.dataset.timeoutId = timeoutId.toString();
+            }
+        }
+
+        // 删除网页功能
+        function deleteWebpage(webpageId, buttonElement) {
+            const originalHtml = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 删除中...';
+            buttonElement.disabled = true;
+
+            fetch(`/api/delete-webpage/${webpageId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cardToRemove = document.querySelector(`.webpage-card[data-webpage-id="${webpageId}"]`);
+                    if (cardToRemove) {
+                        cardToRemove.remove();
+                        const remainingCards = document.querySelectorAll('.webpage-card');
+                        if (remainingCards.length === 0) {
+                            document.getElementById('webpages-content').innerHTML = renderEmptyState('webpages');
+                        }
+                    }
+                } else {
+                    alert('删除网页失败: ' + (data.error || '未知错误'));
+                    revertDeleteButton(buttonElement);
+                    buttonElement.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('删除网页失败:', error);
+                alert('删除网页失败，请重试');
+                revertDeleteButton(buttonElement);
+                buttonElement.disabled = false;
+            });
+        }
+        
+        // 下载网页HTML代码
+        function downloadWebpageHtml(webpageId, title) {
+            fetch(`/api/webpage-html/${webpageId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.html_code) {
+                        // 创建Blob并下载
+                        const blob = new Blob([data.html_code], { type: 'text/html' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = decodeURIComponent(title) + '.html';
+                        document.body.appendChild(a);
+                        a.click();
+                        
+                        // 清理
+                        setTimeout(function() {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                    } else {
+                        alert('获取HTML代码失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('下载HTML失败:', error);
+                    alert('下载失败，请重试');
+                });
+        }
+        
+        // 渲染空状态
+        function renderEmptyState(type) {
+            const icon = type === 'images' ? 'fa-image' : (type === 'cards' ? 'fa-id-card' : 'fa-globe');
+            const title = type === 'images' ? '暂无图片历史' : (type === 'cards' ? '暂无卡片历史' : '暂无网页历史');
+            const desc = type === 'images' ? '去生成一些惊艳的图片吧' : (type === 'cards' ? '去生成一些精美的卡片吧' : '去生成一些炫酷的网页吧');
+            const link = type === 'images' ? '/create' : (type === 'cards' ? '/create-card' : '/create-webpage');
+            const btnText = type === 'images' ? '生成图片' : (type === 'cards' ? '生成卡片' : '生成网页');
+            
+            return `
+                <div class="flex justify-center w-full">
+                    <div class="text-center py-16 w-full max-w-2xl">
+                        <i class="fas ${icon} text-6xl text-gray-700 mb-4"></i>
+                        <h2 class="text-2xl font-bold text-gray-400">${title}</h2>
+                        <p class="text-gray-500 mt-2">${desc}</p>
+                        <a href="${link}" class="inline-block mt-6 bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-3 rounded-full text-white font-bold">${btnText}</a>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).replace(/\//g, '-');
+        }
+        
+        // 图片下载功能
+        function downloadImage(imageUrl, imageName) {
+            // 阻止默认链接行为
+            event.preventDefault();
+            
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    
+                    const fileName = imageName
+                        ? imageName.substring(0, 30).replace(/[\\/:*?"<>|]/g, "_") + ".jpg" 
+                        : "visionary-image.jpg";
+                    
+                    a.download = fileName;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(blobUrl);
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('下载图片失败:', error);
+                    alert('下载图片失败，请重试');
+                });
+        }
+        
+        // 卡片下载功能 (修改以适应模态框和列表下载)
+        function downloadCard(cardId, fromList = false) {
+            let cardHtmlToRender;
+            let cardElementId = fromList ? `temp-download-card-${cardId}` : 'modal-card-content'; // Use different source based on call origin
+
+            if (fromList) {
+                 if (window.cardDataStore && window.cardDataStore[cardId]) {
+                    cardHtmlToRender = window.cardDataStore[cardId];
+                 } else {
+                     alert('无法找到卡片数据进行下载。');
+                     return;
+                 }
+            } else {
+                // If downloading from modal, the content is already rendered
+                const modalContent = document.getElementById('modal-card-content');
+                if (modalContent.innerHTML) {
+                     cardHtmlToRender = modalContent.innerHTML;
+                } else {
+                     alert('模态框中没有卡片内容可供下载。');
+                     return;
+                }
+            }
+            
+            // Create a temporary container off-screen to render the card for canvas capture
+            const tempContainer = document.createElement('div');
+            tempContainer.id = cardElementId;
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px'; // Position off-screen
+            tempContainer.style.width = '800px'; // Set a reasonable width for rendering
+            tempContainer.style.height = 'auto';
+            tempContainer.style.padding = '20px';
+            tempContainer.style.boxSizing = 'border-box';
+            tempContainer.style.backgroundColor = '#111827'; // Match modal or desired background
+            tempContainer.innerHTML = cardHtmlToRender;
+            document.body.appendChild(tempContainer);
+            
+            // Ensure inner elements are not restricted in size (might need adjustments based on card content)
+            const allElements = tempContainer.querySelectorAll('*');
+            allElements.forEach(el => {
+                 el.style.maxHeight = 'none';
+                 el.style.maxWidth = '100%';
+                 el.style.overflow = 'visible';
+                 if (el.style.position === 'fixed') el.style.position = 'relative';
+            });
+
+            html2canvas(tempContainer, {
+                scale: 2,
+                backgroundColor: '#111827',
+                allowTaint: true,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `visionary-card-${cardId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Clean up the temporary container
+                document.body.removeChild(tempContainer);
+            }).catch(error => {
+                console.error('下载卡片失败:', error);
+                alert('下载卡片失败，请重试');
+                // Clean up even if error occurs
+                if (document.getElementById(cardElementId)) {
+                     document.body.removeChild(tempContainer);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

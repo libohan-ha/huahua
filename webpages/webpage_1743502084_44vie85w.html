@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>孟菲斯风格 - 校园资源循环提案</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --memphis-pink: #FF6B6B;
+            --memphis-teal: #4ECDC4;
+            --memphis-yellow: #FFE66D;
+            --memphis-black: #2D3047;
+            --memphis-white: #F7FFF7;
+            --memphis-orange: #FF9F1C;
+            --memphis-blue: #3D5A80;
+            --font-display: 'Poppins', 'Noto Sans SC', sans-serif;
+            --font-body: 'Noto Sans SC', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: #f0f0f0; /* Light grey background to frame the card */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .knowledge-card-container {
+            width: 400px;
+            max-height: 1280px; /* Adjusted max-height */
+            overflow: hidden; /* Changed to hidden to contain elements better */
+            position: relative; /* Needed for absolute positioning of shapes */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.05);
+            background-color: var(--memphis-white);
+            border: 4px solid var(--memphis-black);
+             /* Ensure scrolling if content exceeds max-height */
+             overflow-y: auto;
+        }
+
+        .card-content {
+            padding: 20px;
+            position: relative; /* Relative for z-index stacking */
+            z-index: 1; /* Content above background shapes */
+            min-height: 800px; /* Ensure card has some height */
+        }
+
+        /* Memphis Background Shapes - using pseudo-elements and divs */
+        .memphis-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Clip shapes within bounds */
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            background-color: var(--memphis-pink);
+        }
+
+        .shape-1 { /* Teal squiggle */
+             width: 120px;
+             height: 80px;
+             background-color: transparent;
+             border: 10px solid var(--memphis-teal);
+             border-radius: 50% / 20% 80% 30% 70%;
+             top: -20px;
+             left: -30px;
+             transform: rotate(-25deg);
+             opacity: 0.8;
+         }
+
+        .shape-2 { /* Yellow circle */
+             width: 80px;
+             height: 80px;
+             background-color: var(--memphis-yellow);
+             border-radius: 50%;
+             top: 150px;
+             right: -40px;
+             opacity: 0.9;
+         }
+
+         .shape-3 { /* Black triangle */
+             width: 0;
+             height: 0;
+             border-left: 40px solid transparent;
+             border-right: 40px solid transparent;
+             border-bottom: 70px solid var(--memphis-black);
+             bottom: 100px;
+             left: 20px;
+             transform: rotate(15deg);
+             opacity: 0.7;
+         }
+
+        .shape-4 { /* Pink rectangle */
+            width: 150px;
+            height: 50px;
+            background-color: var(--memphis-pink);
+            bottom: 20px;
+            right: -50px;
+            transform: rotate(30deg);
+        }
+
+        .shape-5 { /* Grid pattern */
+            width: 100px;
+            height: 100px;
+            background-image: linear-gradient(var(--memphis-blue) 2px, transparent 2px), linear-gradient(90deg, var(--memphis-blue) 2px, transparent 2px);
+            background-size: 20px 20px;
+            top: 300px;
+            left: -20px;
+            opacity: 0.5;
+        }
+
+        .shape-6 { /* Orange dots */
+            width: 60px;
+            height: 60px;
+            background-image: radial-gradient(var(--memphis-orange) 5px, transparent 5px);
+            background-size: 20px 20px;
+            bottom: 200px;
+            right: 30px;
+            opacity: 0.8;
+        }
+
+
+        .date-area {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--memphis-white);
+            background-color: var(--memphis-teal);
+            padding: 5px 15px;
+            display: inline-block;
+            transform: rotate(-5deg);
+            margin-bottom: 25px;
+            box-shadow: 4px 4px 0 var(--memphis-black);
+            position: relative;
+            z-index: 2; /* Above background shapes */
+            margin-left: 10px;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 2rem; /* Increased size */
+            line-height: 1.1;
+            color: var(--memphis-black);
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 0 var(--memphis-yellow); /* Added text shadow */
+        }
+
+        .card-subtitle {
+            font-family: var(--font-body);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--memphis-blue);
+            margin-bottom: 30px;
+            padding: 5px 10px;
+            background-color: rgba(255, 230, 109, 0.7); /* Semi-transparent yellow bg */
+            display: inline-block;
+             position: relative;
+             z-index: 2;
+        }
+
+        .quote-block {
+            background-color: var(--memphis-pink);
+            color: var(--memphis-white);
+            padding: 20px;
+            margin: 30px -10px 30px 10px; /* Asymmetric margin */
+            position: relative;
+            z-index: 2;
+            transform: rotate(2deg);
+            box-shadow: -5px 5px 0 var(--memphis-black);
+            border: 3px solid var(--memphis-black);
+        }
+        .quote-block::before {
+            content: '\f10d'; /* Font Awesome quote-left */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: rgba(45, 48, 71, 0.5); /* Semi-transparent black */
+            position: absolute;
+            top: -10px;
+            left: -15px;
+            transform: rotate(-15deg);
+        }
+        .quote-block p {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+
+        .core-points h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--memphis-black);
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 8px solid var(--memphis-yellow);
+             position: relative;
+             z-index: 2;
+        }
+
+        .core-points ul {
+            list-style: none;
+            padding-left: 0;
+             position: relative;
+             z-index: 2;
+        }
+
+        .core-points li {
+            margin-bottom: 12px;
+            padding-left: 30px; /* Increased padding */
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+             color: var(--memphis-blue);
+        }
+
+        .core-points li::before {
+             content: '';
+             position: absolute;
+             left: 5px; /* Adjusted position */
+             top: 5px;
+             width: 15px; /* Size of shape */
+             height: 15px;
+             background-color: var(--memphis-teal); /* Default shape color */
+             transform: rotate(45deg); /* Default is diamond */
+             transition: all 0.2s ease-in-out;
+         }
+        .core-points li:nth-child(odd)::before {
+             background-color: var(--memphis-orange);
+             border-radius: 50%; /* Circle for odd items */
+             transform: rotate(0deg);
+        }
+         .core-points li:hover::before {
+             transform: scale(1.3) rotate(135deg);
+         }
+        .core-points li strong {
+            font-weight: 700;
+            color: var(--memphis-black);
+            margin-right: 5px;
+        }
+
+
+        .editor-note {
+            position: absolute; /* Position absolutely relative to container */
+            bottom: 15px;
+            right: 15px;
+            width: 140px;
+            background-color: var(--memphis-yellow);
+            color: var(--memphis-black);
+            padding: 15px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            transform: rotate(5deg);
+            box-shadow: -4px 4px 0 var(--memphis-pink);
+            border: 2px dashed var(--memphis-black);
+            z-index: 3; /* Highest z-index */
+            text-align: center;
+        }
+        .editor-note i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--memphis-black);
+            display: block;
+        }
+         .editor-note strong {
+             font-family: var(--font-display);
+             font-weight: 800;
+             display: block;
+             margin-bottom: 5px;
+         }
+
+        /* Scrollbar styling */
+         .knowledge-card-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .knowledge-card-container::-webkit-scrollbar-track {
+            background: var(--memphis-white);
+            border-left: 1px solid var(--memphis-black);
+        }
+        .knowledge-card-container::-webkit-scrollbar-thumb {
+            background-color: var(--memphis-teal);
+            border-radius: 0; /* Sharp edges */
+            border: 1px solid var(--memphis-black);
+        }
+        .knowledge-card-container::-webkit-scrollbar-thumb:hover {
+            background-color: var(--memphis-pink);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="knowledge-card-container">
+        <!-- Background Shapes -->
+        <div class="memphis-bg">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+            <div class="shape shape-6"></div>
+            <!-- Add more shapes as needed -->
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+            <div class="date-area" id="current-date">
+                <!-- Date will be injected by JS -->
+            </div>
+
+            <h1 class="card-title">
+                校园资源循环 UPGRADE!
+            </h1>
+             <h2 class="card-subtitle">
+                 从“节约型”到“创收型”的提案 / By XXX
+             </h2>
+
+            <div class="quote-block">
+                <p>推动校园资源管理从传统的“末端处理”向“源头减量、过程循环、价值再造”转变。</p>
+            </div>
+
+            <div class="core-points">
+                <h3>核心挑战 & 破局点</h3>
+                <ul>
+                    <li><strong>现状痛点:</strong> 资源利用率低，废弃物量大，闲置资源“沉睡”。</li>
+                    <li><strong>模式局限:</strong> 回收体系低效，学生激励不足，价值转化渠道缺失，部门联动不畅。</li>
+                    <li><strong>升级提案:</strong> ① 优化回收网络；② 搭建多元平台 (循环市集/再生工坊)；③ 强化宣教激励；④ 探索市场运作 (校企合作/校园品牌)。</li>
+                     <li><strong>预期成效:</strong> 提高回收利用率，盘活闲置资源，创造经济收益，提升环保意识，打造绿色示范校园。</li>
+                </ul>
+            </div>
+
+             <!-- Keep Editor's Note at the bottom -->
+             <div class="editor-note">
+                 <i class="fas fa-recycle fa-spin" style="--fa-animation-duration: 5s;"></i>
+                 <strong>EDITOR'S NOTE</strong>
+                 Rethink Waste! Transform Trash into Campus Treasure. 加入校园循环新浪潮！Let's rock!
+             </div>
+
+        </div>
+
+
+    </div>
+
+    <script>
+        function getFormattedDate() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year} / ${month} / ${day}`;
+        }
+        document.getElementById('current-date').textContent = getFormattedDate();
+    </script>
+</body>
+</html>

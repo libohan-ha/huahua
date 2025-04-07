@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISIONARY - AI图像生成平台</title>
+    <!-- 引入Tailwind CSS -->
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <!-- 引入Font Awesome -->
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- 引入中文字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-neon-pink: #ff2d55;
+            --color-electric-blue: #0066ff;
+            --color-bright-yellow: #ffcc00;
+            --color-purple: #9933ff;
+            --color-dark: #0a0a1a;
+            --color-dark-blue: #0f1a2a;
+            --color-light: #ffffff;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 4rem;
+        }
+        
+        /* 霓虹灯文字效果 */
+        .neon-text {
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--color-neon-pink),
+                0 0 30px var(--color-neon-pink),
+                0 0 40px var(--color-neon-pink),
+                0 0 55px var(--color-neon-pink),
+                0 0 75px var(--color-neon-pink);
+            animation: neon-pulse 1.5s infinite alternate;
+        }
+        
+        @keyframes neon-pulse {
+            from {
+                text-shadow:
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 20px var(--color-neon-pink),
+                    0 0 30px var(--color-neon-pink),
+                    0 0 40px var(--color-neon-pink);
+            }
+            to {
+                text-shadow:
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 20px var(--color-electric-blue),
+                    0 0 30px var(--color-electric-blue),
+                    0 0 40px var(--color-electric-blue),
+                    0 0 55px var(--color-electric-blue),
+                    0 0 75px var(--color-electric-blue);
+            }
+        }
+        
+        .ai-title {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 5px 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            z-index: 20;
+            transform: rotate(-5deg);
+            border: 1px solid var(--color-neon-pink);
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-dark-blue) 100%);
+            color: var(--color-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 添加动态背景元素 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="none" width="100" height="100"/><rect fill="%23ffffff" opacity="0.05" width="1" height="1" x="25" y="25"/><rect fill="%23ffffff" opacity="0.05" width="1" height="1" x="75" y="55"/><rect fill="%23ffffff" opacity="0.05" width="1" height="1" x="55" y="75"/><rect fill="%23ffffff" opacity="0.05" width="1" height="1" x="15" y="85"/><rect fill="%23ffffff" opacity="0.05" width="1" height="1" x="85" y="15"/></svg>');
+            z-index: -2;
+            pointer-events: none;
+        }
+        
+        .serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+        
+        .mega-title {
+            font-size: 90px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+        
+        .large-title {
+            font-size: 60px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        
+        .diagonal-section {
+            transform: skewY(-5deg);
+            margin: 8rem 0;
+        }
+        
+        .diagonal-content {
+            transform: skewY(5deg);
+        }
+        
+        .clip-shape {
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 15px var(--color-neon-pink);
+            border: 2px solid var(--color-neon-pink);
+        }
+        
+        .electric-border {
+            box-shadow: 0 0 15px var(--color-electric-blue);
+            border: 2px solid var(--color-electric-blue);
+        }
+        
+        .image-container {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .image-container img {
+            transition: transform 0.5s ease;
+        }
+        
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+        
+        .text-overlap {
+            position: relative;
+        }
+        
+        .text-overlap span {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 1.2em;
+            z-index: -1;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--color-neon-pink), var(--color-electric-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        
+        /* 流体动态效果 */
+        .fluid-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--color-neon-pink), var(--color-electric-blue));
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: -1;
+            animation: float 15s infinite alternate ease-in-out;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.05); }
+            100% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        
+        /* 添加星星背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite alternate ease-in-out, float 8s infinite alternate ease-in-out;
+            transform-origin: center;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 0.8; transform: scale(1.2); }
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(0.8); }
+            50% { transform: translate(10px, -10px) scale(1); }
+            100% { transform: translate(-10px, 10px) scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 流体背景形状 -->
+    <div class="fluid-shape" style="width: 500px; height: 500px; top: -200px; right: -100px;"></div>
+    <div class="fluid-shape" style="width: 300px; height: 300px; bottom: 300px; left: -150px;"></div>
+    <div class="fluid-shape" style="width: 400px; height: 400px; top: 50%; right: -200px; background: linear-gradient(45deg, var(--color-purple), var(--color-electric-blue));"></div>
+    <div class="fluid-shape" style="width: 350px; height: 350px; bottom: -100px; right: 30%; background: linear-gradient(45deg, var(--color-bright-yellow), var(--color-neon-pink));"></div>
+    
+    <!-- 星星背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold gradient-text">VISIONARY</h1>
+            </div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/" class="text-pink-500">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors">生成卡片</a>
+                <a href="/create-webpage" class="text-white hover:text-pink-500 transition-colors">生成网页</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors">创作历史</a>
+                {% if current_user.is_authenticated %}
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold">退出</a>
+                {% else %}
+                <a href="/login" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold">登录</a>
+                {% endif %}
+            </div>
+            <div class="md:hidden">
+                <button class="text-white text-2xl" id="mobile-menu-button"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+        
+        <!-- 移动菜单 -->
+        <div id="mobile-menu" class="hidden bg-black bg-opacity-95 w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="/" class="text-pink-500 py-2 block">首页</a>
+                <a href="/create" class="text-white hover:text-pink-500 transition-colors py-2 block">生成图片</a>
+                <a href="/create-card" class="text-white hover:text-pink-500 transition-colors py-2 block">生成卡片</a>
+                <a href="/unified-history" class="text-white hover:text-pink-500 transition-colors py-2 block">创作历史</a>
+                {% if current_user.is_authenticated %}
+                <a href="/logout" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold inline-block text-center">退出</a>
+                {% else %}
+                <a href="/login" class="bg-gradient-to-r from-pink-500 to-blue-500 px-6 py-2 rounded-full text-white font-bold inline-block text-center">登录</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <header class="min-h-screen flex items-center pt-20 relative overflow-hidden">
+        <div class="container mx-auto px-4 py-20">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 z-10 animate-fade-in">
+                    <h1 class="mega-title text-left mb-6">
+                        <span class="block text-pink-500 mb-2">创造</span>
+                        <span class="block text-blue-500 mb-2">想象</span>
+                        <span class="block gradient-text">无限</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 max-w-lg animate-fade-in delay-200">用AI的力量，将你的文字描述转化为惊艳视觉作品，释放你的创造力</p>
+                    <div class="flex space-x-4 animate-fade-in delay-300">
+                        <a href="/create" class="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-full text-lg font-bold btn-hover">开始创作</a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 mt-12 md:mt-0 relative animate-fade-in delay-400">
+                    <div class="relative z-10 transform rotate-3 neon-border rounded-lg overflow-hidden">
+                      
+                        <img src="./image/kehuan.png" alt="AI生成艺术" class="w-full h-auto">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 功能区域 -->
+    <section class="py-20 relative" id="create">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-12 gradient-text">创作方式</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- 文字生成图片 -->
+                <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 neon-border hover:transform hover:scale-105 transition-all">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold gradient-text">文字生成图片</h3>
+                        <span class="bg-blue-500 text-xs text-white px-2 py-1 rounded-full">热门</span>
+                    </div>
+                    <p class="text-gray-300 mb-6">描述你想要的画面，AI将为你创造出令人惊叹的图像。无论是写实风格还是抽象艺术，从简单的草图到复杂的场景，我们都能实现。</p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">支持不同风格定制</p>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">高清晰度输出</p>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">免费下载和分享</p>
+                        </div>
+                    </div>
+                    <a href="/create" class="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full hover:shadow-lg transition-all w-full text-center">开始创作</a>
+                </div>
+                
+                <!-- 文字生成卡片 -->
+                <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 neon-border hover:transform hover:scale-105 transition-all">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold gradient-text">文字生成卡片</h3>
+                        <span class="bg-pink-500 text-xs text-white px-2 py-1 rounded-full">新功能</span>
+                    </div>
+                    <p class="text-gray-300 mb-6">输入你想展示的文字内容，AI将为你设计精美的信息卡片。适合制作引言卡、个人名片、社交媒体分享卡等多种用途。</p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">29种设计风格可选</p>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">支持内容编辑</p>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">一键下载分享</p>
+                        </div>
+                    </div>
+                    <a href="/create-card" class="inline-block bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-3 px-6 rounded-full hover:shadow-lg transition-all w-full text-center">开始创作</a>
+                </div>
+                
+                <!-- 文字生成网页 -->
+                <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 neon-border hover:transform hover:scale-105 transition-all">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold gradient-text">文字生成网页</h3>
+                        <span class="bg-pink-500 text-xs text-white px-2 py-1 rounded-full">新功能</span>
+                    </div>
+                    <p class="text-gray-300 mb-6">只需描述你想要的网页内容和风格，AI将为你创建一个完整的HTML网页。适合创建简单的展示页、活动页、产品介绍等。</p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">多种网页风格</p>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">完整HTML代码</p>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <p class="text-gray-400">可直接访问链接</p>
+                        </div>
+                    </div>
+                    <a href="/create-webpage" class="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full hover:shadow-lg transition-all w-full text-center">开始创作</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品展示区 -->
+    <section class="diagonal-section bg-blue-900 relative">
+        <div class="diagonal-content py-20">
+            <div class="container mx-auto px-4">
+                <h2 class="large-title text-center mb-16 animate-fade-in">
+                    <span class="gradient-text">热门作品</span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 作品1 -->
+                    <div class="image-container rounded-lg overflow-hidden animate-fade-in delay-100">
+                        <img src="./image/nihongdushi.png" alt="赛博朋克风格" class="w-full h-80 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+                            <h3 class="text-xl font-bold">霓虹都市</h3>
+                            <p class="text-sm text-gray-300">by @创意大师</p>
+                            <div class="flex items-center mt-2">
+                                <span class="mr-3"><i class="fas fa-heart text-pink-500"></i> 256</span>
+                                <span><i class="fas fa-comment text-blue-500"></i> 42</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 作品2 -->
+                    <div class="image-container rounded-lg overflow-hidden animate-fade-in delay-200">
+                        <img src="./image/mofasenlin.png" alt="奇幻风格" class="w-full h-80 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+                            <h3 class="text-xl font-bold">魔法森林</h3>
+                            <p class="text-sm text-gray-300">by @幻想家</p>
+                            <div class="flex items-center mt-2">
+                                <span class="mr-3"><i class="fas fa-heart text-pink-500"></i> 189</span>
+                                <span><i class="fas fa-comment text-blue-500"></i> 27</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 作品3 -->
+                    <div class="image-container rounded-lg overflow-hidden animate-fade-in delay-300">
+                        <img src="./image/yuzhongjiejing.png" alt="雨中街景" class="w-full h-80 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+                            <h3 class="text-xl font-bold">雨中街景</h3>
+                            <p class="text-sm text-gray-300">by @科技控</p>
+                            <div class="flex items-center mt-2">
+                                <span class="mr-3"><i class="fas fa-heart text-pink-500"></i> 312</span>
+                                <span><i class="fas fa-comment text-blue-500"></i> 56</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- 创作流程 -->
+    <section class="py-20 relative">
+        <div class="container mx-auto px-4">
+            <h2 class="large-title text-center mb-16 animate-fade-in">
+                <span class="text-white">简单三步</span>
+                <span class="block text-pink-500">释放创造力</span>
+            </h2>
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <!-- 步骤1 -->
+                <div class="md:w-1/3 text-center mb-12 md:mb-0 animate-fade-in delay-100">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-pink-500 text-white text-4xl font-bold mb-6">1</div>
+                    <h3 class="text-2xl font-bold mb-4">描述你的想法</h3>
+                    <p class="text-gray-400 px-4">输入详细的文字描述，越具体的描述将产生越精确的结果</p>
+                </div>
+                <!-- 步骤2 -->
+                <div class="md:w-1/3 text-center mb-12 md:mb-0 animate-fade-in delay-200">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-500 text-white text-4xl font-bold mb-6">2</div>
+                    <h3 class="text-2xl font-bold mb-4">AI生成图像</h3>
+                    <p class="text-gray-400 px-4">我们的AI模型会根据你的描述生成多个图像供你选择</p>
+                </div>
+                <!-- 步骤3 -->
+                <div class="md:w-1/3 text-center animate-fade-in delay-300">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-yellow-500 text-white text-4xl font-bold mb-6">3</div>
+                    <h3 class="text-2xl font-bold mb-4">下载</h3>
+                    <p class="text-gray-400 px-4">下载你喜欢的图像</p>
+                </div>
+            </div>
+            <div class="text-center mt-16">
+                <a href="/create" class="bg-gradient-to-r from-pink-500 to-blue-500 px-10 py-4 rounded-full text-white text-xl font-bold inline-block btn-hover animate-fade-in delay-400">立即开始创作</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 注册区域 -->
+    <section id="signup" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black z-0"></div>
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-pink-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+        
+        <div class="container mx-auto px-4 py-16 relative z-10">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-black bg-opacity-60 backdrop-filter backdrop-blur-lg p-10 rounded-2xl border border-gray-800 shadow-2xl transform hover:scale-[1.01] transition-all duration-300 neon-border">
+                    <h2 class="large-title mb-8 animate-fade-in text-center">加入VISIONARY</h2>
+                    <p class="text-xl mb-10 animate-fade-in delay-100 text-center">注册账户，保存你的创作，获取专属功能</p>
+                    
+                    <!-- Flash消息显示 -->
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="mb-6 p-4 bg-red-900 bg-opacity-70 rounded-xl border border-red-700 text-white">
+                        <ul class="list-disc pl-5">
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    
+                    <!-- 邮箱注册/登录表单 -->
+                    <form action="/email-auth" method="post" class="flex flex-col space-y-6 animate-fade-in delay-200">
+                        <input type="email" name="email" placeholder="输入你的邮箱" class="w-full px-6 py-5 rounded-xl bg-gray-800 bg-opacity-70 text-white border-2 border-gray-700 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 transition-all duration-300 text-lg" required>
+                        <input type="password" name="password" placeholder="输入你的密码" class="w-full px-6 py-5 rounded-xl bg-gray-800 bg-opacity-70 text-white border-2 border-gray-700 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 transition-all duration-300 text-lg" required>
+                        
+                        <div class="flex space-x-4">
+                            <button type="submit" name="action" value="login" class="w-1/2 py-5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xl font-bold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">登录</button>
+                            <button type="submit" name="action" value="register" class="w-1/2 py-5 rounded-xl bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white text-xl font-bold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">免费注册</button>
+                        </div>
+                    </form>
+                    
+                    <!-- 服务条款说明 -->
+                    <p class="text-gray-400 mt-6 text-center text-sm animate-fade-in delay-400">
+                        登录或注册即表示您同意我们的<a href="#" class="text-pink-500 hover:underline">服务条款</a>和<a href="#" class="text-pink-500 hover:underline">隐私政策</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-black py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-8 md:mb-0">
+                    <h2 class="text-3xl font-bold gradient-text mb-4">VISIONARY</h2>
+                    <p class="text-gray-400 max-w-md">用AI的力量，将你的创意转化为视觉艺术，无需专业设计技能</p>
+                    <div class="flex space-x-4 mt-6">
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-weixin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-weibo"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-bilibili"></i></a>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">功能</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">文字生成图片</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">文字生成卡片</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">风格转换</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">文字生成网页</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2025 VISIONARY AI图像生成平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载动画
+            // 确保页面滚动到顶部
+            window.scrollTo(0, 0);
+            
+            const animatedElements = document.querySelectorAll('.animate-fade-in');
+            animatedElements.forEach(element => {
+                element.style.opacity = '1';
+            });
+            
+            // 创建星星背景
+            createStars();
+            
+            // 检查URL是否包含#signup锚点，如果有则滚动到注册区域
+            if(window.location.hash === '#signup') {
+                setTimeout(() => {
+                    document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+                }, 500); // 延迟滚动，让页面完全加载
+            }
+            
+            // 为所有指向#signup的链接添加平滑滚动效果
+            document.querySelectorAll('a[href="#signup"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        });
+
+        // 滚动动画
+        window.addEventListener('scroll', function() {
+            // 滚动动画逻辑
+        });
+        
+        // 创建星星背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 150; // 星星数量
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机大小 (0.5px - 3px)
+                const size = Math.random() * 2.5 + 0.5;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // 随机位置
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                star.style.left = `${posX}%`;
+                star.style.top = `${posY}%`;
+                
+                // 随机动画延迟
+                star.style.animationDelay = `${Math.random() * 4}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+    
