@@ -17,7 +17,8 @@ import string
 load_dotenv()
 
 app = Flask(__name__, static_folder='.', template_folder='.')
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "visionary-app-fixed-secret-key")  # 使用环境变量或固定值
+DEFAULT_SECRET_KEY = "visionary-app-fixed-secret-key"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", DEFAULT_SECRET_KEY)  # 使用环境变量或固定值
 
 # 设置登录管理器
 login_manager = LoginManager()
@@ -375,9 +376,9 @@ def debug_login():
     debug_info = {
         'logged_in': current_user.is_authenticated,
         'session_keys': list(session.keys()) if session else [],
-        'app_secret_fixed': app.secret_key == os.urandom(24)  # False表示使用了固定的密钥
+        'using_default_secret_key': app.secret_key == DEFAULT_SECRET_KEY  # True表示正在使用默认的固定密钥
     }
-    
+
     if current_user.is_authenticated:
         debug_info.update({
             'user_id': current_user.id,
@@ -1081,7 +1082,7 @@ def delete_webpage(webpage_id):
         print(f"删除网页历史记录失败: {str(e)}\n{error_details}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# 提交事务
+# 启动应用
 if __name__ == '__main__':
-    app.run(debug=bool(os.getenv("FLASK_DEBUG", "True") == "True"), 
+    app.run(debug=bool(os.getenv("FLASK_DEBUG", "True") == "True"),
             port=int(os.getenv("FLASK_PORT", 5000)))
